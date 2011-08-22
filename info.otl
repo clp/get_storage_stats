@@ -1,0 +1,27 @@
+info.otl  clpoda  2011_0822
+	PC-batbug:/home/clpoda/p/parse2011
+	# Time-stamp: <Mon 2011 Aug 22 02:48:53 PMPM clpoda> 
+	Extract data from a storage array log file
+
+Intro
+	Project based on request from D Sexton to learn Perl & do sys admin work.
+Goals
+	Make a useful tool, in a short time, that solves his immediate problem.
+	Learn more about Perl.
+		Using Module::Build & related s/w tools.
+		Learn by teaching.
+		Find CPAN modules that can do this job, or similar.
+		Define a module that could fit into CPAN.
+	Build s/w that dws can use, diagnose, maintain, & extend.
+Plan
+	Start w/ Module::Build structure.
+	Make a very simple soln, perhaps a 1-liner.
+	Make a soln using CPAN, perhaps a module exists for this specific log format.
+	Make a soln w/ core modules only.
+		Basic functionality included.
+	Post s/w at github for us to reach.
+		Maybe similar tools exist there.
+		
+Problem
+	Extract data from a storage array log file.
+	Make a CSV file that Excel can import.

@@ -1,0 +1,61 @@
+dws_note.1.otl  clpoda  2011_0822
+	PC-batbug:/home/clpoda/p/parse2011
+	# Time-stamp: <Mon 2011 Aug 22 02:49:25 PMPM clpoda> 
+	Notes from dws on s/w tool.
+
+
+Mon 22 Aug 2011 09:42:16 AM PDT
+
+Yes. I'm attaching a couple of files of raw data
+(cal-rsa11XstorageArrayProfile.txt). 
+
+To answer the questions below, this is the output from an
+collecting support data from an array. These files are pretty
+small but typical of what I end up having to munch. 
+
+The file just has new line separators but also has some
+identifying "tokens" for specific lines I sometimes want.
+
+I have attached my script (grep3.to.get.luns)  that produces a
+first cut of what I want. 
+
+Trouble is it took me over a day to produce the script :-). I'd like
+to improve my efficiency and hoping perl might help.
+
+The script doesn't give me clean data on rxsg102-zoneroots-2 in
+the cal-rsa111... file)
+
+I'm sort of assuming it doesn't like the last "-" but could be wrong.
+
+The script gives me a set of lines I can try to import into an
+excel spreadsheet.  For my purposes, I can leave it in a flat
+file but that is old school I guess. I actually couldn't figure
+out how to get the silly file into excel without cutting and
+pasting it by column.
+
+I have all the data in a virtual box instance of solaris on my
+laptop.
+
+
+
+
+
+
+###
+
+
+
+
+
+Mon 22 Aug 2011 10:22:34 AM PDT
+
+And here is an example of the error I have to manually fix
+
+cal-rxsg102 0 rxsg102-zoneroots-2 150 GB RAID 5 FCRaid5 600A0B8000476446000015B24C8F2EB0
+cal-rxsg102 0 4 rxsg102-zoneroots 50 GB RAID 5 FCRaid5 150 GB RAID 5 FCRaid5 600A0B800047644600000C1549DB2023 600A0B8000476446000015B24C8F2EB0
+
+The volume name that is the "short" version, rxsg102-zoneroots,  picks up
+data from the "long" volume name and appends it to the line. I was thinking
+that the -w option to grep would fix that but I see on re-reading the man page
+the "-" is not one of the characters it includes.
+
