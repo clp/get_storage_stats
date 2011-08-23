@@ -19,3 +19,4 @@ for j in $hostlunvol
 #/bin/echo   ${hostlunvol} ${vol}
 done
 #TMP.1 rm /tmp/volumes.wwn.$$
+

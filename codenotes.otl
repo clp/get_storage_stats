@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Mon 2011 Aug 22 07:37:35 PMPM clpoda> 
+	# Time-stamp: <Mon 2011 Aug 22 10:59:16 PMPM clpoda> 
 
 
 Observations.
@@ -11,6 +11,21 @@ Observations.
 
 
 Plan.
+	Decide on the data structure to hold o/p data.
+		i.1. Anon array of anon hash refs.
+			Each hash holds the seven desired fields.
+			Each hash holds data for a different host.
+			%host
+			Keys are names of each field.
+			$host{hostname} = $hostname, etc.
+		i.2. Anon hash of anon hash refs.
+			Parent hash key: hostname; value: ref to child hash.
+				%parent: $parent{hostname} = \%hostname.
+			Each child hash holds the seven desired fields for one host.
+				%child: $hostname{hostname} = host-123
+				%child: host-123{lun} = 4
+			Child's Keys are names of each field.
+				$host{hostname} = $hostname, etc.
 	TBD: Any cmd line args desired besides i/p file name?
 	Open the i/p file.
 	Read loop1: one line or more? TBD: Read entire file?
