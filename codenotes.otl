@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Mon 2011 Aug 22 10:59:16 PMPM clpoda> 
+	# Time-stamp: <Tue 2011 Aug 23 12:03:32 PMPM clpoda> 
 
 
 Observations.
@@ -40,6 +40,22 @@ Plan.
 	Print o/p: Loop: foreach Hostname 
 		Hostname  LUN  $j=$hostlunvol  Capacity+Units RAID Level Pool  WWN
 	
+
+Notes.
+	n.1. Change data structure to AoH refs.
+		: Tue2011_0823_12:00 
+		Now changing code in new branch off work branch: use_AoH.
+		Each array elt is a hostname, which is a ref to a hash.
+		Each hash has keys for the 7 field names, and corresponding values.
+		TBD: How to ensure that all hostnames are gathered?
+			Assume that the 'hostname ... Tray' lines have all hostnames.
+			Push every unique hostname found there into the AoH.
+		TBD: How to ensure that array has one entry per hostname?
+			Verify that only unique hostnames are pushed onto AoH.
+
+
+#
+
 
 Analysis of grep3.to.get.luns shell script.
 	awk: Search for Volume name & Volume WWN in the block data, in this form:
@@ -97,26 +113,25 @@ Bug in grep3.
 
 
 ### Source code of grep3.to.get.luns
-
-#!/bin/sh 
-FILE=$1
-awk '/Volume name:/, /Status:/' $FILE | grep -v handle | grep -v Status | sed -e 's/Volume name://' | sed -e 's/Volume WWN://'  | xargs -n 2 > /tmp/volumes.wwn.$$
-
-for i in `grep Host: $FILE  | awk '{print $2}'`
-do
-touch all.lines.maybe
-#a=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $4 "\t"$2 "\t"$1}'` 
-hostlunvol=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $1}'` 
-for j in $hostlunvol
-	do
-	sizdrd=`grep -w ${j} $FILE | grep RAID | awk '{print $3,$4,$5,$6,$8}'`
-	lun=`grep -w ${j} $FILE | grep Tray | awk '{print $2}'`
-	wwn=`grep -w ${j} /tmp/volumes.wwn.$$ | awk '{print $2}'`
-	echo $i $lun $j $sizdrd $wwn
-	done
-#vol=`grep -w $i $FILE  | grep Tray | awk '{print $1}'`
-#/bin/echo   ${hostlunvol} 
-#/bin/echo   ${hostlunvol} ${vol}
-done
-rm /tmp/volumes.wwn.$$
+    #!/bin/sh 
+    FILE=$1
+    awk '/Volume name:/, /Status:/' $FILE | grep -v handle | grep -v Status | sed -e 's/Volume name://' | sed -e 's/Volume WWN://'  | xargs -n 2 > /tmp/volumes.wwn.$$
+    
+    for i in `grep Host: $FILE  | awk '{print $2}'`
+    do
+    touch all.lines.maybe
+    #a=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $4 "\t"$2 "\t"$1}'` 
+    hostlunvol=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $1}'` 
+    for j in $hostlunvol
+    	do
+    	sizdrd=`grep -w ${j} $FILE | grep RAID | awk '{print $3,$4,$5,$6,$8}'`
+    	lun=`grep -w ${j} $FILE | grep Tray | awk '{print $2}'`
+    	wwn=`grep -w ${j} /tmp/volumes.wwn.$$ | awk '{print $2}'`
+    	echo $i $lun $j $sizdrd $wwn
+    	done
+    #vol=`grep -w $i $FILE  | grep Tray | awk '{print $1}'`
+    #/bin/echo   ${hostlunvol} 
+    #/bin/echo   ${hostlunvol} ${vol}
+    done
+    rm /tmp/volumes.wwn.$$
 

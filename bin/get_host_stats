@@ -1,5 +1,10 @@
 #! /usr/bin/env perl
 
+#TBD Design Note, Tue2011_0823_11:54 
+#TBD: Change data structure to array of refs to hashes.
+# Each array elt is a hostname, which is a ref to a hash.
+# Each hash has keys for the 7 field names, and corresponding values.
+#
 use strict;
 use warnings;
 
@@ -8,39 +13,23 @@ use warnings;
 use Data::Dumper;
 
 #TBD use Parse::StorageArrayLog qw/match_line/;
-# use Parse::StorageArrayLog;
+#TBD use Parse::StorageArrayLog;
 
 our $VERSION = '0.01';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
 my $input_file;
-#TBR my $emit_line_numbers = 0;
-#TBR my $output_start_column = 0;
-#TBR my $output_length       = 0;  # default to the whole line
-
-#TBR unless (GetOptions(
-            # input matching
-            #TBR 'window-size=i' => \$window_size,
-            #TBR 'match-pattern=s' => \$input_file,
-            #TBR # output formatting
-            #TBR 'number-output' => \$emit_line_numbers,
-            #TBR # control what part of the match line we emit by calls to substr
-            #TBR 'start-column=i'  => \$output_start_column,
-            #TBR 'output-length=i' => \$output_length)) {
-    #TBR die usage();
-#TBR }
 
 #TBD unless ($input_file) {
     #TBD die "no input_file found on command line\n\n", usage();
 #TBD }
 
-#TBR?  my $qt = new Sendmail::QidTrace::Queue({match        => 'TBD' });
-
 my @storage_array_data;
-my %host;
+my @hosts;
+my %stats;
 
-#RAID line:
+#TBD: Sample data: RAID line:
 # rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
 
 
@@ -49,14 +38,26 @@ while (<>) {
     #DBG print "DBG: \$_: ,$_,\n";
     if ( m/^([\S]+)\s+(\d+)\s+Tray/ ) {
         my $hostname = $1;
+        print "DBG-Tray regex: \$hostname: ,$hostname,\n";
         my $lun  = $2;
         #TBD? push @{ $storage_array_data{$host} } , $lun;
-        $host{hostname} = $hostname  ;
-        $host{lun} = $lun  ;
-        push  @storage_array_data, \%host;
+        #
+        #TMP.1 $stats{hostname}{hostname} = $hostname  ;
+        #TMP.1 $stats{hostname}{lun} = $lun  ;
+        #TMP.1 push  @hosts, $stats{hostname};
+        #TMP.2 $stats{hostname}= $hostname  ;
+        #TMP.2 $stats{lun} = $lun  ;
+        $stats{$hostname}{hostname} = $hostname  ;
+        $stats{$hostname}{lun} = $lun  ;
+        push  @hosts, $stats{$hostname};
+        print "DBG-Tray regex: \@hosts: ,@hosts,\n";
         #TBR push  @storage_array_data, $host{lun} = $lun  ;
+        #
         next;
     }
+
+=begin
+
     if ( m/(\S+)\s+\w+\s+(\d+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/x ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $hostname = $1;
@@ -74,18 +75,26 @@ while (<>) {
         push  @storage_array_data, \%host;
         next;
     }
-}
+
+=end
+
+=cut
+
+}  # End while().
 
 # Print all stored data
-foreach (@storage_array_data) {
+print "\nDBG: Dumper \$_:\n";
+foreach (@hosts) {
     #DBG print "DBG: \$_: ,$_,\n";
-    #DBG print Dumper ($_);
+    print Dumper ($_);
+    #F print Dumper (%{$_});
 }
 
-foreach (@storage_array_data) {
-    #DBG print "DBG: \$_: ,$_,\n";
-    foreach ( keys %host ){
-        print "DBG: \$_ => \$host{$_}: ,$_ => $host{$_},\n";
+print "\nPrint output w/ loops around \@hosts and each hostname hash:\n";
+foreach my $h (@hosts) {
+    #DBG print "DBG-loop at each host array member: \%\$h: ",%$h,"\n";
+    foreach my $k ( sort keys %$h ){
+        print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{hostname}}{$k}, "\n";
     }
 }
 
