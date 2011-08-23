@@ -1,0 +1,107 @@
+codenotes.otl  clpoda  2011_0822
+	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
+	# Time-stamp: <Mon 2011 Aug 22 07:37:35 PMPM clpoda> 
+
+
+Observations.
+	The data to extract is in two styles:
+		Some are on the same line as the search term.
+		Some are in blocks of text, indented below the search term on a header line.
+		So I cannot simply search for a term, grab some lines w/ it, & combine them.
+
+
+Plan.
+	TBD: Any cmd line args desired besides i/p file name?
+	Open the i/p file.
+	Read loop1: one line or more? TBD: Read entire file?
+		Must use more than 1 line to find Name & WWN pair.
+		If a multi-line pattern matches /Volume name:...Status:/
+			Save volname => wwn in hash.
+	Read loop2: Entire file, one line at a time.
+		If line matches /hostname...Tray/ 
+			Save hostname => LUN
+		If line matches /hostname...RAID/ 
+			Save hostname => [capacity+units RAID+level POOL]
+	Print o/p: Loop: foreach Hostname 
+		Hostname  LUN  $j=$hostlunvol  Capacity+Units RAID Level Pool  WWN
+	
+
+Analysis of grep3.to.get.luns shell script.
+	awk: Search for Volume name & Volume WWN in the block data, in this form:
+		Volume name: rxsg102-zoneroots-2
+           Volume handle: 49
+           Volume WWN: 600A0B8000476446000015B24C8F2EB0
+	loop $i:
+		Search for Host name in the line data, & iterate over them, in this form:
+			Host: cal-rxsg102
+				Note the difference, this name has a prefix 'cal-'.
+		hostlunvol: Search for line w/ Host name and 'Tray', in this form:
+			rxsg102-zoneroots       	4  	Tray.85.Controller.A	cal-rxsg102           	Optimal      	
+				To find entries in the Mappings table, to get LUN at field 2.
+			TBD: Why use the 'sort' cmd?
+		loop $j: $hostlunvol.
+			TBD: What is in $hostlunvol: hostname, LUN, or a combination, or other?
+			TBD: What is ${j}?
+			sizdrd: (5 fields).
+				To find data in the Standard Volumes table, 8 fields per entry, in this form:
+					rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
+			lun: field 2, LUN.
+				To find entries in the Mappings table, to get LUN at field 2.
+					rxsg102-zoneroots       	4  	Tray.85.Controller.A	cal-rxsg102           	Optimal      	
+			wwn: field 2, WWN.
+				To find WWN from the temp file of names & WWN.
+			echo $i $lun $j $sizdrd $wwn: 7 fields (if Cap+Units is 1 & RAID & Level is 1)
+				Hostname  LUN  $j=$hostlunvol  Capacity+Units RAID Level Pool  WWN
+		done
+	done
+
+Questions.
+	q.1. How to step through a shell script single line at a time.
+		: Mon2011_0822_19:04 
+		Is there a debug tool?
+			Set breakpoints, watch execution.
+		What are the vars to set to echo each line as executed & see its o/p?
+			set -xv
+			This is not as good as a debugger, esp w/ so many lines to process & loops.
+
+Bug in grep3.
+	: Mon2011_0822_17:53 
+	Bug report from dws.
+	Three o/p lines below show the problem.
+	Lines 1 & 3 are correct: 7 fields each.
+	The second line below is wrong: 12 fields.
+	It has extra fields in middle & at end (lines 1 & 3 are correct):
+		cal-rxsg102 0 rxsg102-zoneroots-2 150 GB RAID 5 FCRaid5 600A0B8000476446000015B24C8F2EB0
+		cal-rxsg102 0 4 rxsg102-zoneroots 50 GB RAID 5 FCRaid5 150 GB RAID 5 FCRaid5 600A0B800047644600000C1549DB2023 600A0B8000476446000015B24C8F2EB0
+		cal-uc7-x4600 8 uc7-zoneroots 100 GB RAID 5 FCRaid5 600A0B80004764A000000C444A374612	
+	It is the only o/p line I see in o/p from cal*111* i/p file w/ two digits between field 1 & field 4.
+		Other o/p lines have only one digit btwn field 1 & field 3 (two names).
+		Maybe caused by bad parsing.
+
+
+
+
+### Source code of grep3.to.get.luns
+
+#!/bin/sh 
+FILE=$1
+awk '/Volume name:/, /Status:/' $FILE | grep -v handle | grep -v Status | sed -e 's/Volume name://' | sed -e 's/Volume WWN://'  | xargs -n 2 > /tmp/volumes.wwn.$$
+
+for i in `grep Host: $FILE  | awk '{print $2}'`
+do
+touch all.lines.maybe
+#a=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $4 "\t"$2 "\t"$1}'` 
+hostlunvol=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $1}'` 
+for j in $hostlunvol
+	do
+	sizdrd=`grep -w ${j} $FILE | grep RAID | awk '{print $3,$4,$5,$6,$8}'`
+	lun=`grep -w ${j} $FILE | grep Tray | awk '{print $2}'`
+	wwn=`grep -w ${j} /tmp/volumes.wwn.$$ | awk '{print $2}'`
+	echo $i $lun $j $sizdrd $wwn
+	done
+#vol=`grep -w $i $FILE  | grep Tray | awk '{print $1}'`
+#/bin/echo   ${hostlunvol} 
+#/bin/echo   ${hostlunvol} ${vol}
+done
+rm /tmp/volumes.wwn.$$
+
