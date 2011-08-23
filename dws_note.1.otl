@@ -1,6 +1,6 @@
 dws_note.1.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/parse2011
-	# Time-stamp: <Mon 2011 Aug 22 02:49:25 PMPM clpoda> 
+	# Time-stamp: <Mon 2011 Aug 22 05:58:49 PMPM clpoda> 
 	Notes from dws on s/w tool.
 
 
@@ -58,4 +58,23 @@ The volume name that is the "short" version, rxsg102-zoneroots,  picks up
 data from the "long" volume name and appends it to the line. I was thinking
 that the -w option to grep would fix that but I see on re-reading the man page
 the "-" is not one of the characters it includes.
+
+
+
+###
+
+
+
+Mon 22 Aug 2011 11:55
+
+of course, I didn't identify stuff
+
+(cal-ora1-x4600) (15) (ora1-data16) (278.896 GB) (RAID 1) (RAID10-variable-disks)(600A0B80004764A0000011684C1F2A9F)
+ 
+so in parentheses above are the "fields" I've pulled out at the moment. Note that 2 of
+the "fields" from my perspective, size and raid type are space separated fields in
+the source file.
+ 
+hostname  lun#   volume_name  size  raidtype  raid_profile  lun_wwn
+
 

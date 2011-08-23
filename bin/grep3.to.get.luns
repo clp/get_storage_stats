@@ -18,4 +18,4 @@ for j in $hostlunvol
 #/bin/echo   ${hostlunvol} 
 #/bin/echo   ${hostlunvol} ${vol}
 done
-rm /tmp/volumes.wwn.$$
+#TMP.1 rm /tmp/volumes.wwn.$$
