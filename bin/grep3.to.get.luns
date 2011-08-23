@@ -1,0 +1,21 @@
+#!/bin/sh 
+FILE=$1
+awk '/Volume name:/, /Status:/' $FILE | grep -v handle | grep -v Status | sed -e 's/Volume name://' | sed -e 's/Volume WWN://'  | xargs -n 2 > /tmp/volumes.wwn.$$
+
+for i in `grep Host: $FILE  | awk '{print $2}'`
+do
+touch all.lines.maybe
+#a=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $4 "\t"$2 "\t"$1}'` 
+hostlunvol=`grep -w $i $FILE | grep Tray| sort -k 2 -n | awk '{print $1}'` 
+for j in $hostlunvol
+	do
+	sizdrd=`grep -w ${j} $FILE | grep RAID | awk '{print $3,$4,$5,$6,$8}'`
+	lun=`grep -w ${j} $FILE | grep Tray | awk '{print $2}'`
+	wwn=`grep -w ${j} /tmp/volumes.wwn.$$ | awk '{print $2}'`
+	echo $i $lun $j $sizdrd $wwn
+	done
+#vol=`grep -w $i $FILE  | grep Tray | awk '{print $1}'`
+#/bin/echo   ${hostlunvol} 
+#/bin/echo   ${hostlunvol} ${vol}
+done
+rm /tmp/volumes.wwn.$$
