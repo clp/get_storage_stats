@@ -1,0 +1,258 @@
+#! /usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+
+use Data::Dumper;
+
+#TBD use Parse::StorageArrayLog qw/match_line/;
+use Parse::StorageArrayLog;
+
+our $VERSION = '0.01';
+
+my $prog = $0;
+$prog =~ s{\A.*/}{};    # strip leading path, if any
+my $input_file;
+#TBR my $emit_line_numbers = 0;
+#TBR my $output_start_column = 0;
+#TBR my $output_length       = 0;  # default to the whole line
+
+#TBR unless (GetOptions(
+            # input matching
+            #TBR 'window-size=i' => \$window_size,
+            #TBR 'match-pattern=s' => \$input_file,
+            #TBR # output formatting
+            #TBR 'number-output' => \$emit_line_numbers,
+            #TBR # control what part of the match line we emit by calls to substr
+            #TBR 'start-column=i'  => \$output_start_column,
+            #TBR 'output-length=i' => \$output_length)) {
+    #TBR die usage();
+#TBR }
+
+#TBD unless ($input_file) {
+    #TBD die "no input_file found on command line\n\n", usage();
+#TBD }
+
+#TBR?  my $qt = new Sendmail::QidTrace::Queue({match        => 'TBD' });
+
+my @storage_array_data;
+my %host;
+
+#RAID line:
+# rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
+
+
+while (<>) {
+    chomp;
+    #DBG print "DBG: \$_: ,$_,\n";
+    if ( m/^([\S]+)\s+(\d+)\s+Tray/ ) {
+        my $hostname = $1;
+        my $lun  = $2;
+        #TBD? push @{ $storage_array_data{$host} } , $lun;
+        $host{hostname} = $hostname  ;
+        $host{lun} = $lun  ;
+        push  @storage_array_data, \%host;
+        #TBR push  @storage_array_data, $host{lun} = $lun  ;
+        next;
+    }
+    if ( m/(\S+)\s+\w+\s+(\d+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/x ) {
+        #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
+        my $hostname = $1;
+        my $capacity  = $2;
+        my $raid  = $3;
+        my $pool  = $4;
+        $host{hostname} = $hostname  ;
+        $host{capacity} = $capacity  ;
+        $host{raid} = $raid  ;
+        $host{pool} = $pool  ;
+        #TBR push  @storage_array_data, $host{hostname} = $hostname  ;
+        #TBR push  @storage_array_data, $host{hostname} = $hostname  ;
+        #TBR push  @storage_array_data, $host{capacity} = $capacity  ;
+        #TBR push  @storage_array_data, $host{raid} = $raid  ;
+        push  @storage_array_data, \%host;
+        next;
+    }
+}
+
+# Print all stored data
+foreach (@storage_array_data) {
+    #DBG print "DBG: \$_: ,$_,\n";
+    #DBG print Dumper ($_);
+}
+
+foreach (@storage_array_data) {
+    #DBG print "DBG: \$_: ,$_,\n";
+    foreach ( keys %host ){
+        print "DBG: \$_ => \$host{$_}: ,$_ => $host{$_},\n";
+    }
+}
+
+
+=begin bypass
+
+while (<>) {
+    chomp;
+    $qt->push_onto_leading_array( $_ );
+
+    # Fill the _leading array before checking for matches.
+    if ( $qt->size_of_leading_array  >= $window_size ) {
+        my $ln = $qt->shift_off_leading_array();
+        my ($match_email, $match_qid) = match_line($email_address, $ln);
+        #
+        next if ( $match_qid eq '' ); # No qid found: skip to next line.
+        #
+        if ($match_email || ( grep {m/$match_qid/}  $qt->get_seen_qids )) {
+            $qt->add_match({match => $match_email,
+                            qid   => $match_qid,
+                            line  => ($output_length
+                                      ? substr($ln, $output_start_column, $output_length)
+                                      : substr($ln, $output_start_column)),
+                            num   => $. });
+            #
+            # Check all buffered lines for a match w/ new addition to save queue.
+            #TBD: Is this where duplicates get added to o/p?
+            my (@buf_matches, @lines);
+            push @lines , $qt->get_leading_array(), $qt->get_trailing_array ;
+            @buf_matches =  grep {m/$match_qid/}  @lines ;
+            if ( @buf_matches ) {
+                #TBD: Erase all lines in @buf_matches from the buffer arrays, to avoid duplicates in o/p?
+                  # Or figure out a better soln to avoid dupls.
+                  # Use Jeff's idea about tracking the line num of last emitted value, & starting next search above that number.
+                foreach (@buf_matches){
+                    $qt->add_match({match => $match_email,
+                                    qid   => $match_qid,
+                                    line  => ($output_length
+                                              ? substr($_, $output_start_column, $output_length)
+                                              : substr($_, $output_start_column)),
+                                    num   => $. });
+                }
+            }
+            next;
+        }
+        #
+        if ( $match_qid ) {
+            # qid found, but it does not match any saved qid's.
+            #TBD: Chg to @lines?:
+            if ( grep {m/$match_qid/}  $qt->get_seen_qids ) {
+                $qt->add_match({match => $match_email,
+                                qid   => $match_qid,
+                                line  => ($output_length
+                                          ? substr($ln, $output_start_column, $output_length)
+                                          : substr($ln, $output_start_column)),
+                                num   => $. });
+                next;
+            }
+            # Save to array if not added to queue.
+            $qt->push_onto_trailing_array ($ln);
+            if ( $qt->size_of_trailing_array  >= $window_size ) {
+                $ln = $qt->shift_off_trailing_array();
+                #TBD: Maybe check the line for matching qid before tossing.
+            }
+        }
+    }
+} # End of while loop.
+
+
+
+# $qt->drain_queue();
+#F my @lines_to_drain = ($qt->get_leading_array(). $qt->get_trailing_array );
+#TBD: Chg to @lines?:
+my @lines_to_drain;
+push @lines_to_drain, $qt->get_leading_array, $qt->get_trailing_array;
+
+foreach  my $ltd ( @lines_to_drain ) {
+    #TBD: Do not re-process each line.
+    my ($match_email, $match_qid) = match_line($email_address, $ltd);
+    #F  if ($match_email || ( grep {m/$match_qid/}  @lines_to_drain )) {
+      # Logic err: Don't check each line against the array holding those same lines!
+    if ($match_email || ( grep {m/$match_qid/}  $qt->get_seen_qids )) {
+        $qt->add_match({match => $match_email,
+                        qid   => $match_qid,
+                        line  => ($output_length
+                                  ? substr($ltd, $output_start_column, $output_length)
+                                  : substr($ltd, $output_start_column)),
+                        num   => $. });
+        next;
+    }
+}
+
+#Sun2011_0821_12:21  Modified print to include star-prefix for all but line 1.
+# Print all matching lines from the %_seen hash.
+foreach  my $k ( sort keys  %{ $qt->get_seen_hash } ) {
+    # TBF: Specifying cmd line param '-s' can affect the sorted o/p.  Fix this.
+    print shift ( @{ ${ $qt->get_seen_hash }{$k} } ) , "\n";
+    foreach ( @{ ${ $qt->get_seen_hash }{$k} } ) {
+        print "**** $_\n";
+    };
+}
+
+
+=end bypass
+
+=cut
+
+
+
+
+=begin ORG.OK
+
+# Print all matching lines from the %_seen hash.
+foreach  my $k ( sort keys  %{ $qt->get_seen_hash } ) {
+    # TBF: Specifying cmd line param '-s' can affect the sorted o/p.  Fix this.
+    foreach ( @{ ${ $qt->get_seen_hash }{$k} } ) {
+        print $_, "\n";
+    };
+}
+
+=end ORG.OK
+
+=cut
+
+
+=pod
+
+=head2 Print All Matching Lines
+
+Use two loops to print the collection of o/p lines, grouped 
+and sorted by qid.
+
+The outer loop dereferences the hash ref,
+  selects the keys (which are qid's),
+  sorts the list by qid,
+  then iterates over its block using each qid as the index value.
+
+The inner loop takes the qid as a key for the %_seen hash,
+  gets the hash value for that key (which is a ref to an array),
+  dereferences the array,
+  iterates over every member of that array,
+  and prints each line found in that array.
+
+=cut
+
+
+
+
+exit;
+
+sub usage {
+    return <<"eousage";
+usage $prog: [options] <log_files>
+
+$prog is a filter for Storage Array TBD:config|status|log files.
+It searches for host names and presents desired data about them.
+
+Options to control the matching
+
+
+Output options
+
+-number-output  flag     emit the line number of the matching line on output
+
+-start-column   int      Control what portion of the matching line is displayed.
+                         start-column gives the first column of the output line displayed.
+-output-length  int      Length of the output line before line numbering, if any.
+eousage
+}
+
