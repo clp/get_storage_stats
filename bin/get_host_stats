@@ -15,7 +15,7 @@ use Data::Dumper;
 #TBD use Parse::StorageArrayLog qw/match_line/;
 #TBD use Parse::StorageArrayLog;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
@@ -25,12 +25,20 @@ my $input_file;
     #TBD die "no input_file found on command line\n\n", usage();
 #TBD }
 
-my @storage_array_data;
 my @hosts;
 my %stats;
 
 #TBD: Sample data: RAID line:
 # rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
+# rssg101-smbzfs-dev      	Optimal	1,394.482 GB	RAID 5    	26   	FCRaid5              	
+#TBD: Sample data: Tray line:
+# rssg111-smbzfs-dev      	2  	Tray.85.Controller.A	cal-rssg111           	Optimal      	
+#TBD: Sample data: WWN data:
+# Volume name: rssg101-smbzfs-dev
+      # Volume handle: 25
+      # Volume WWN: 600A0B800047644600000C0F49D9B6BB
+      # Status: Optimal
+ 
 
 
 while (<>) {
@@ -38,16 +46,13 @@ while (<>) {
     #DBG print "DBG: \$_: ,$_,\n";
     if ( m/^([\S]+)\s+(\d+)\s+Tray/ ) {
         my $hostname = $1;
-        print "DBG-Tray regex: \$hostname: ,$hostname,\n";
+        #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
         my $lun  = $2;
         $stats{$hostname}{hostname} = $hostname  ;
         $stats{$hostname}{lun} = $lun  ;
         push  @hosts, $stats{$hostname};
-        #DBG print "DBG-Tray regex: \@hosts: ,@hosts,\n";
         next;
     }
-
-# =begin comment
 
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
@@ -59,14 +64,13 @@ while (<>) {
         $stats{$hostname}{capacity} = $capacity  ;
         $stats{$hostname}{raid} = $raid  ;
         $stats{$hostname}{pool} = $pool  ;
-        #TBR push  @storage_array_data, $host{hostname} = $hostname  ;
-        #TBR push  @storage_array_data, $host{hostname} = $hostname  ;
-        #TBR push  @storage_array_data, $host{capacity} = $capacity  ;
-        #TBR push  @storage_array_data, $host{raid} = $raid  ;
-        #TBR? push  @storage_array_data, \%host;
         next;
     }
 
+# =begin comment
+
+    #TBD: Write code to Get WWN.
+    #
 # =end comment
 
 # =cut
@@ -97,151 +101,8 @@ foreach my $h (@hosts) {
 }
 
 
-=begin bypass
-
-while (<>) {
-    chomp;
-    $qt->push_onto_leading_array( $_ );
-
-    # Fill the _leading array before checking for matches.
-    if ( $qt->size_of_leading_array  >= $window_size ) {
-        my $ln = $qt->shift_off_leading_array();
-        my ($match_email, $match_qid) = match_line($email_address, $ln);
-        #
-        next if ( $match_qid eq '' ); # No qid found: skip to next line.
-        #
-        if ($match_email || ( grep {m/$match_qid/}  $qt->get_seen_qids )) {
-            $qt->add_match({match => $match_email,
-                            qid   => $match_qid,
-                            line  => ($output_length
-                                      ? substr($ln, $output_start_column, $output_length)
-                                      : substr($ln, $output_start_column)),
-                            num   => $. });
-            #
-            # Check all buffered lines for a match w/ new addition to save queue.
-            #TBD: Is this where duplicates get added to o/p?
-            my (@buf_matches, @lines);
-            push @lines , $qt->get_leading_array(), $qt->get_trailing_array ;
-            @buf_matches =  grep {m/$match_qid/}  @lines ;
-            if ( @buf_matches ) {
-                #TBD: Erase all lines in @buf_matches from the buffer arrays, to avoid duplicates in o/p?
-                  # Or figure out a better soln to avoid dupls.
-                  # Use Jeff's idea about tracking the line num of last emitted value, & starting next search above that number.
-                foreach (@buf_matches){
-                    $qt->add_match({match => $match_email,
-                                    qid   => $match_qid,
-                                    line  => ($output_length
-                                              ? substr($_, $output_start_column, $output_length)
-                                              : substr($_, $output_start_column)),
-                                    num   => $. });
-                }
-            }
-            next;
-        }
-        #
-        if ( $match_qid ) {
-            # qid found, but it does not match any saved qid's.
-            #TBD: Chg to @lines?:
-            if ( grep {m/$match_qid/}  $qt->get_seen_qids ) {
-                $qt->add_match({match => $match_email,
-                                qid   => $match_qid,
-                                line  => ($output_length
-                                          ? substr($ln, $output_start_column, $output_length)
-                                          : substr($ln, $output_start_column)),
-                                num   => $. });
-                next;
-            }
-            # Save to array if not added to queue.
-            $qt->push_onto_trailing_array ($ln);
-            if ( $qt->size_of_trailing_array  >= $window_size ) {
-                $ln = $qt->shift_off_trailing_array();
-                #TBD: Maybe check the line for matching qid before tossing.
-            }
-        }
-    }
-} # End of while loop.
-
-
-
-# $qt->drain_queue();
-#F my @lines_to_drain = ($qt->get_leading_array(). $qt->get_trailing_array );
-#TBD: Chg to @lines?:
-my @lines_to_drain;
-push @lines_to_drain, $qt->get_leading_array, $qt->get_trailing_array;
-
-foreach  my $ltd ( @lines_to_drain ) {
-    #TBD: Do not re-process each line.
-    my ($match_email, $match_qid) = match_line($email_address, $ltd);
-    #F  if ($match_email || ( grep {m/$match_qid/}  @lines_to_drain )) {
-      # Logic err: Don't check each line against the array holding those same lines!
-    if ($match_email || ( grep {m/$match_qid/}  $qt->get_seen_qids )) {
-        $qt->add_match({match => $match_email,
-                        qid   => $match_qid,
-                        line  => ($output_length
-                                  ? substr($ltd, $output_start_column, $output_length)
-                                  : substr($ltd, $output_start_column)),
-                        num   => $. });
-        next;
-    }
-}
-
-#Sun2011_0821_12:21  Modified print to include star-prefix for all but line 1.
-# Print all matching lines from the %_seen hash.
-foreach  my $k ( sort keys  %{ $qt->get_seen_hash } ) {
-    # TBF: Specifying cmd line param '-s' can affect the sorted o/p.  Fix this.
-    print shift ( @{ ${ $qt->get_seen_hash }{$k} } ) , "\n";
-    foreach ( @{ ${ $qt->get_seen_hash }{$k} } ) {
-        print "**** $_\n";
-    };
-}
-
-
-=end bypass
-
-=cut
-
-
-
-
-=begin ORG.OK
-
-# Print all matching lines from the %_seen hash.
-foreach  my $k ( sort keys  %{ $qt->get_seen_hash } ) {
-    # TBF: Specifying cmd line param '-s' can affect the sorted o/p.  Fix this.
-    foreach ( @{ ${ $qt->get_seen_hash }{$k} } ) {
-        print $_, "\n";
-    };
-}
-
-=end ORG.OK
-
-=cut
-
-
-=pod
-
-=head2 Print All Matching Lines
-
-Use two loops to print the collection of o/p lines, grouped 
-and sorted by qid.
-
-The outer loop dereferences the hash ref,
-  selects the keys (which are qid's),
-  sorts the list by qid,
-  then iterates over its block using each qid as the index value.
-
-The inner loop takes the qid as a key for the %_seen hash,
-  gets the hash value for that key (which is a ref to an array),
-  dereferences the array,
-  iterates over every member of that array,
-  and prints each line found in that array.
-
-=cut
-
-
-
-
 exit;
+
 
 sub usage {
     return <<"eousage";
