@@ -19,7 +19,10 @@ our $VERSION = '0.02';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
-my $input_file;
+
+#TBD: Temp fix; assume only one arg on cmd line: i/p file name.
+# Cannot specify multiple i/p files w/ this fix.
+my $input_file = $ARGV[0];
 
 #TBD unless ($input_file) {
     #TBD die "no input_file found on command line\n\n", usage();
@@ -55,24 +58,37 @@ while (<>) {
         $stats{$hostname}{pool} = $pool  ;
         next;
     }
+}  # End while().
+
 
 # =begin comment
 
+#TBD: Process the i/p file again, after @hosts has been filled.
+my $infile;
+open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
+while (<$infile>) {
+    chomp;
     #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/smx ) {
     #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/mx ) {
     #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/x ) {
     #
     #TBD: Maybe do separate read loop of full file for this search only?
     #
-    if ( m/Volume name:\s (\S+)\s+ /x ) {
-      ### Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/x ) {
+    if ( m/\s+ Volume.name:\s+ (\S+) /x ) {
+      ### \s+ Volume.handle:\s+ Volume.WWN: \s+(\S+)  \s+ Status:/x ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $volname = $1;
         #TMP my $wwn  = $2;
         #DBG values:
         #TBF.Need hostname in this scope; $hostname = $volname =~ /.*/;
-        $volname = 'abcde';
+        #TMP $volname = 'abcde';
         my $wwn = 12345;
+        #
+        #TBD: Look for hostname that matches volname, & use its hash to store volname.
+        #? $hostname = grep $volname, $stats{$hostname}{hostname};
+        #F my $ho = grep $volname, @hosts;
+        #F my $ho = grep {/$volname/}  keys %stats;
+        my $hostname = $stats{$volname}{hostname};
         $stats{$hostname}{volname} = $volname  ;
         $stats{$hostname}{wwn} = $wwn  ;
         next;
@@ -89,7 +105,7 @@ while (<>) {
 
 # =cut
 
-}  # End while().
+}  # End while() #2.
 
 # Print all stored data
 #DBG print "\nDBG: Dumper \$_:\n";
