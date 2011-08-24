@@ -33,9 +33,29 @@ my %stats;
 my $hostname;
 
 
+# Read entire file & get hostnames & fill @hosts array.
 while (<>) {
     chomp;
     #DBG print "DBG: \$_: ,$_,\n";
+    if ( m/Host:\s+(\S+)/ ) {
+        $hostname = $1;
+        #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
+        $stats{$hostname}{hostname} = $hostname  ;
+        push  @hosts, $stats{$hostname};
+        next;
+    }
+}  # End while #1.
+
+
+# =begin comment
+
+#TBD: Process the i/p file again, after @hosts has been filled.
+# Read one paragraph at a time (a block separated by blank lines).
+$/ = '';
+my $infile;
+open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
+while (<$infile>) {
+    chomp;
     if ( m/^([\S]+)\s+(\d+)\s+Tray/ ) {
         $hostname = $1;
         #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
@@ -48,7 +68,7 @@ while (<>) {
 
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
-        $hostname = $1;
+        $volname = $1;
         my $capacity  = $2;
         my $raid  = $3;
         my $pool  = $4;
@@ -58,7 +78,7 @@ while (<>) {
         $stats{$hostname}{pool} = $pool  ;
         next;
     }
-}  # End while().
+}  # End while #2.
 
 
 # =begin comment
