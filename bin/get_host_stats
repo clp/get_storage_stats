@@ -123,11 +123,12 @@ while (<$infile>) {
     #F print Dumper (%{$_});
 #DBG }
 
-print "hostname, lun, capacity, RAID level, pool\n";
+print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
 foreach my $h (@hosts) {
     #DBG print "DBG-loop at each host array member: \%\$h: ",%$h,"\n";
     print $stats{$h->{hostname}}{hostname}, ", ";
     print $stats{$h->{hostname}}{lun}, ", ";
+    print $stats{$h->{hostname}}{volname}, ", ";
     print $stats{$h->{hostname}}{capacity}, ", ";
     print $stats{$h->{hostname}}{raid}, ", ";
     print $stats{$h->{hostname}}{pool}, ", ";
