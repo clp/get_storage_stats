@@ -56,29 +56,29 @@ while (<>) {
         next;
     }
 
-=begin
+# =begin comment
 
-    if ( m/(\S+)\s+\w+\s+(\d+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/x ) {
+    if ( m/(\S+)\s+\w+\s+(\d+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $hostname = $1;
         my $capacity  = $2;
         my $raid  = $3;
         my $pool  = $4;
-        $host{hostname} = $hostname  ;
-        $host{capacity} = $capacity  ;
-        $host{raid} = $raid  ;
-        $host{pool} = $pool  ;
+        $stats{$hostname}{hostname} = $hostname  ;
+        $stats{$hostname}{capacity} = $capacity  ;
+        $stats{$hostname}{raid} = $raid  ;
+        $stats{$hostname}{pool} = $pool  ;
         #TBR push  @storage_array_data, $host{hostname} = $hostname  ;
         #TBR push  @storage_array_data, $host{hostname} = $hostname  ;
         #TBR push  @storage_array_data, $host{capacity} = $capacity  ;
         #TBR push  @storage_array_data, $host{raid} = $raid  ;
-        push  @storage_array_data, \%host;
+        #TBR? push  @storage_array_data, \%host;
         next;
     }
 
-=end
+# =end comment
 
-=cut
+# =cut
 
 }  # End while().
 
@@ -90,12 +90,19 @@ foreach (@hosts) {
     #F print Dumper (%{$_});
 }
 
-print "\nPrint output w/ loops around \@hosts and each hostname hash:\n";
+print "hostname, lun, capacity, RAID level, pool\n";
 foreach my $h (@hosts) {
     #DBG print "DBG-loop at each host array member: \%\$h: ",%$h,"\n";
-    foreach my $k ( sort keys %$h ){
-        print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{hostname}}{$k}, "\n";
-    }
+    print $stats{$h->{hostname}}{hostname}, ", ";
+    print $stats{$h->{hostname}}{lun}, ", ";
+    print $stats{$h->{hostname}}{capacity}, ", ";
+    print $stats{$h->{hostname}}{raid}, ", ";
+    print $stats{$h->{hostname}}{pool}, "\n";
+
+    #DBG foreach my $k ( keys %$h ){
+    #DBG print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{hostname}}{$k}, "\n";
+    #DBG }
+    #DBG print "\n";
 }
 
 

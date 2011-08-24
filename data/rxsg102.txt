@@ -1,4 +1,5 @@
 abc 123 Tray
+abc       	Optimal	42 TB       	RAID 99    	24   	FCRaid5              	
          rxsg102-zoneroots*
          rxsg102-zoneroots-2*
          rxsg102-zoneroots Capacity: 50 GB (53687091200 bytes) Offset (blocks): 41943040
