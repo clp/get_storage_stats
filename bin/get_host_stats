@@ -64,6 +64,8 @@ while (<>) {
 # =begin comment
 
 #TBD: Process the i/p file again, after @hosts has been filled.
+# Read one paragraph at a time.
+$/ = '';
 my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
@@ -74,7 +76,10 @@ while (<$infile>) {
     #
     #TBD: Maybe do separate read loop of full file for this search only?
     #
-    if ( m/\s+ Volume.name:\s+ (\S+) /x ) {
+    #F if ( m/\s+ Volume.name:\s+ (\S+) \s+ Volume.handle:\s+ \d+/x ){
+    #F if ( m/\s+ Volume.name:\s+ (\S+).* Volume.handle:\s+ \d+/msx ){
+    if ( m/\s+ Volume.name:\s+ (\S+).*? Volume.handle:\s+ \d+/msx ){
+      ### \s+ Volume.WWN: \s+(\S+)  \s+ Status:/x ) {
       ### \s+ Volume.handle:\s+ Volume.WWN: \s+(\S+)  \s+ Status:/x ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $volname = $1;

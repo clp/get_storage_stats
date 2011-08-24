@@ -1,4 +1,5 @@
    Volume name: rxsg102-zoneroots
+      Volume handle: 27
 abc 123 Tray
 abc       	Optimal	42 TB       	RAID 99    	24   	FCRaid5              	
          rxsg102-zoneroots*
