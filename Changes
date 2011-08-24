@@ -1,5 +1,9 @@
 Revision history for Parse-StorageArrayLog
 
-0.01    Date/time
+0.01    Mon2011_0822
         First version, released on an unsuspecting world.
+
+0.02    Tue2011_0823_17:51
+        Built two regex's to find seven of the eight fields 
+        for the o/p stream.
 
