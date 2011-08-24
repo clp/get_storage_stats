@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Tue 2011 Aug 23 12:03:32 PMPM clpoda> 
+	# Time-stamp: <Wed 2011 Aug 24 11:23:04 AMAM clpoda> 
 
 
 Observations.
@@ -94,6 +94,12 @@ Questions.
 		What are the vars to set to echo each line as executed & see its o/p?
 			set -xv
 			This is not as good as a debugger, esp w/ so many lines to process & loops.
+	q.2. Must I distinguish between hostname and volumename? > Yes.
+		: Wed2011_0824_10:07 
+		The volname is sometimes but not always the hostname-<volID>.
+			One host can have several different volIDs.
+			The volname can be very different from hostname.
+		The orig s/w shows: hostname, lun, volname, capacity, RAID type, RAID profile, pool.
 
 Bug in grep3.
 	: Mon2011_0822_17:53 
