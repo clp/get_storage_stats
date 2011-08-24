@@ -27,25 +27,14 @@ my $input_file;
 
 my @hosts;
 my %stats;
-
-#TBD: Sample data: RAID line:
-# rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
-# rssg101-smbzfs-dev      	Optimal	1,394.482 GB	RAID 5    	26   	FCRaid5              	
-#TBD: Sample data: Tray line:
-# rssg111-smbzfs-dev      	2  	Tray.85.Controller.A	cal-rssg111           	Optimal      	
-#TBD: Sample data: WWN data:
-# Volume name: rssg101-smbzfs-dev
-      # Volume handle: 25
-      # Volume WWN: 600A0B800047644600000C0F49D9B6BB
-      # Status: Optimal
- 
+my $hostname;
 
 
 while (<>) {
     chomp;
     #DBG print "DBG: \$_: ,$_,\n";
     if ( m/^([\S]+)\s+(\d+)\s+Tray/ ) {
-        my $hostname = $1;
+        $hostname = $1;
         #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
         my $lun  = $2;
         $stats{$hostname}{hostname} = $hostname  ;
@@ -56,7 +45,7 @@ while (<>) {
 
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
-        my $hostname = $1;
+        $hostname = $1;
         my $capacity  = $2;
         my $raid  = $3;
         my $pool  = $4;
@@ -68,6 +57,31 @@ while (<>) {
     }
 
 # =begin comment
+
+    #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/smx ) {
+    #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/mx ) {
+    #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/x ) {
+    #
+    #TBD: Maybe do separate read loop of full file for this search only?
+    #
+    if ( m/Volume name:\s (\S+)\s+ /x ) {
+      ### Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/x ) {
+        #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
+        my $volname = $1;
+        #TMP my $wwn  = $2;
+        #DBG values:
+        #TBF.Need hostname in this scope; $hostname = $volname =~ /.*/;
+        $volname = 'abcde';
+        my $wwn = 12345;
+        $stats{$hostname}{volname} = $volname  ;
+        $stats{$hostname}{wwn} = $wwn  ;
+        next;
+    }
+
+# Volume name: rssg101-smbzfs-dev
+      # Volume handle: 25
+      # Volume WWN: 600A0B800047644600000C0F49D9B6BB
+      # Status: Optimal
 
     #TBD: Write code to Get WWN.
     #
@@ -92,7 +106,8 @@ foreach my $h (@hosts) {
     print $stats{$h->{hostname}}{lun}, ", ";
     print $stats{$h->{hostname}}{capacity}, ", ";
     print $stats{$h->{hostname}}{raid}, ", ";
-    print $stats{$h->{hostname}}{pool}, "\n";
+    print $stats{$h->{hostname}}{pool}, ", ";
+    print $stats{$h->{hostname}}{wwn}, "\n";
 
     #DBG foreach my $k ( keys %$h ){
     #DBG print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{hostname}}{$k}, "\n";
@@ -123,4 +138,16 @@ Output options
 -output-length  int      Length of the output line before line numbering, if any.
 eousage
 }
+
+
+#TBD: Sample data: RAID line:
+# rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
+# rssg101-smbzfs-dev      	Optimal	1,394.482 GB	RAID 5    	26   	FCRaid5              	
+#TBD: Sample data: Tray line:
+# rssg111-smbzfs-dev      	2  	Tray.85.Controller.A	cal-rssg111           	Optimal      	
+#TBD: Sample data: WWN data:
+# Volume name: rssg101-smbzfs-dev
+      # Volume handle: 25
+      # Volume WWN: 600A0B800047644600000C0F49D9B6BB
+      # Status: Optimal
 
