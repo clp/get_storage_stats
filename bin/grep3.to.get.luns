@@ -14,7 +14,7 @@ for j in $hostlunvol
 	#F sizdrd=`grep -w ${j} $FILE | grep (RAID)? | awk '{print $3,$4,$5,$6,$8}'`
 	#F sizdrd=`grep -w ${j} $FILE | grep ^.*RAID.*$ | awk '{print $3,$4,$5,$6,$8}'`
 	sizdrd=`grep -w ${j} $FILE | grep ^.*RAID.*$ | awk '{print $3,$4,$5,$6,$8}'`
-  echo $sizdrd
+  #DBG echo $sizdrd
   #
   #
 	lun=`grep -w ${j} $FILE | grep Tray | awk '{print $2}'`
