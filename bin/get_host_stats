@@ -78,16 +78,19 @@ while (<$infile>) {
     #
     #F if ( m/\s+ Volume.name:\s+ (\S+) \s+ Volume.handle:\s+ \d+/x ){
     #F if ( m/\s+ Volume.name:\s+ (\S+).* Volume.handle:\s+ \d+/msx ){
-    if ( m/\s+ Volume.name:\s+ (\S+).*? Volume.handle:\s+ \d+/msx ){
-      ### \s+ Volume.WWN: \s+(\S+)  \s+ Status:/x ) {
+    if ( m/\s+ Volume.name:\s+ (\S+).*?              # .*?  gets anything including newline, 
+                                                     #   until next text (Volume.handle),
+                                                     #   in non-greedy mode (the '?' suffix)
+      Volume.handle:\s+ \d+.*?                       # Data to skip; TBR?: Remove this line?
+      Volume.WWN: \s+(\S+) .*? Status:/msx ) {
       ### \s+ Volume.handle:\s+ Volume.WWN: \s+(\S+)  \s+ Status:/x ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $volname = $1;
-        #TMP my $wwn  = $2;
+        my $wwn  = $2;
         #DBG values:
         #TBF.Need hostname in this scope; $hostname = $volname =~ /.*/;
         #TMP $volname = 'abcde';
-        my $wwn = 12345;
+        #TBR my $wwn = 12345;
         #
         #TBD: Look for hostname that matches volname, & use its hash to store volname.
         #? $hostname = grep $volname, $stats{$hostname}{hostname};
