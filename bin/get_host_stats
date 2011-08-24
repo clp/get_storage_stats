@@ -40,25 +40,16 @@ while (<>) {
         my $hostname = $1;
         print "DBG-Tray regex: \$hostname: ,$hostname,\n";
         my $lun  = $2;
-        #TBD? push @{ $storage_array_data{$host} } , $lun;
-        #
-        #TMP.1 $stats{hostname}{hostname} = $hostname  ;
-        #TMP.1 $stats{hostname}{lun} = $lun  ;
-        #TMP.1 push  @hosts, $stats{hostname};
-        #TMP.2 $stats{hostname}= $hostname  ;
-        #TMP.2 $stats{lun} = $lun  ;
         $stats{$hostname}{hostname} = $hostname  ;
         $stats{$hostname}{lun} = $lun  ;
         push  @hosts, $stats{$hostname};
-        print "DBG-Tray regex: \@hosts: ,@hosts,\n";
-        #TBR push  @storage_array_data, $host{lun} = $lun  ;
-        #
+        #DBG print "DBG-Tray regex: \@hosts: ,@hosts,\n";
         next;
     }
 
 # =begin comment
 
-    if ( m/(\S+)\s+\w+\s+(\d+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
+    if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $hostname = $1;
         my $capacity  = $2;
@@ -83,12 +74,12 @@ while (<>) {
 }  # End while().
 
 # Print all stored data
-print "\nDBG: Dumper \$_:\n";
-foreach (@hosts) {
+#DBG print "\nDBG: Dumper \$_:\n";
+#DBG foreach (@hosts) {
     #DBG print "DBG: \$_: ,$_,\n";
-    print Dumper ($_);
+    #DBG print Dumper ($_);
     #F print Dumper (%{$_});
-}
+#DBG }
 
 print "hostname, lun, capacity, RAID level, pool\n";
 foreach my $h (@hosts) {
