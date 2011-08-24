@@ -1,3 +1,4 @@
+   Volume name: rxsg102-zoneroots
 abc 123 Tray
 abc       	Optimal	42 TB       	RAID 99    	24   	FCRaid5              	
          rxsg102-zoneroots*
@@ -14,3 +15,44 @@ Access Volume           	31 	N/A                 	cal-rxsg102           	Enabled
    Host: cal-rxsg102
       	Alias: cal-rxsg102-c3
       	Alias: cal-rxsg102-c2
+
+   Volume name: rxsg102-zoneroots
+      Volume handle: 27
+      Volume WWN: 600A0B800047644600000C1549DB2023
+      Status: Optimal
+      Preferred owner: Tray.85.Controller.A
+      Current owner: Tray.85.Controller.A
+      Capacity: 50 GB (53,687,091,200 Bytes)
+      Raid level: RAID 5
+      Block Size: 512
+      Segment size: 512 KB
+      Reconstruction priority: 1 (High)
+      Associated volume group: 24
+      Read cache enabled: true
+      Read cache active: true
+      Write cache enabled: true
+      Write cache active: true
+      Write cache without batteries: false
+      Write cache with mirroring enabled: true
+      Write cache with mirroring active: true
+      Flush write cache after (in seconds): 10
+      Cache read ahead multiplier: 3
+      Media scan enabled: true
+      Media scan with parity check: false
+      Management client attribute: 254337944
+
+   Volume name: rxsg112-apps-zfs2
+      Volume handle: 11
+      Volume WWN: 600A0B800047644600000BAD4950AD1D
+      Status: Optimal
+      Preferred owner: Tray.85.Controller.B
+
+   Volume name: ora1-data10
+      Volume handle: 42
+      Volume WWN: 600A0B80004764A00000113B4C1F263E
+      Status: Optimal
+
+   Volume name: rxsg102-zoneroots-2
+      Volume handle: 49
+      Volume WWN: 600A0B8000476446000015B24C8F2EB0
+      Status: Optimal
