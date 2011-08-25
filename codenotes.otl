@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Wed 2011 Aug 24 06:52:23 PMPM clpoda> 
+	# Time-stamp: <Wed 2011 Aug 24 10:29:41 PMPM clpoda> 
 
 
 Observations.
@@ -38,7 +38,7 @@ Plan.
 		If line matches /hostname...RAID/ 
 			Save hostname => [capacity+units RAID+level POOL]
 	Print o/p: Loop: foreach Hostname 
-		Hostname  LUN  $j=$hostlunvol  Capacity+Units RAID Level Pool  WWN
+		Hostname,  LUN,  $j=$hostlunvol=VolumeName,  Capacity+Units, RAID Level, Pool,  WWN
 	
 
 Notes.
@@ -113,10 +113,12 @@ Questions.
 			: Wed2011_0824_14:23 
 
 Bugs
-	b.1. Using volname instead of hostname.
+	Fixed.b.1. Using volname instead of hostname.
 		: Wed2011_0824_14:04 
 		Now that volname has been retrieved from the block w/ it & WWN,
 		the o/p shows volname where it should show hostname.
+		Fixed by using volname instead of hostname to identify each data record.
+			: Wed2011_0824_22:27 
 
 
 Bug in grep3.
