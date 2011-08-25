@@ -13,7 +13,7 @@ use Data::Dumper;
 
 #TBD use Parse::StorageArrayLog;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
@@ -43,28 +43,7 @@ while (<>) {
         push  @volumes, $stats{$volname};
         next;
     }
-    if ( m/Host:\s+(\S+)/ ) {
-        my $hostname = $1;
-        #DBG print "DBG-Tray regex: \$volname: ,$volname,\n";
-        #TBR $stats{$volname}{volname} = $volname  ;
-        push  @hosts, $hostname;
-        next;
-    }
 }  # End while #1.
-
-# Match volname to core host name pattern.
-foreach my $h (@hosts) {
-    $h =~ s/^cal-//;
-    $h =~ s/-.*$//;
-    #DBG print "DBG: \$h: ,$h,\n";
-    foreach my $v (@volumes) {
-        #DBG print "DBG: \$v->{volname}: ", ,$v->{volname},, "\n";
-        if ($v->{volname} =~ /$h/) {
-            $stats{$v->{volname}}{hostname} = $h;
-            #DBG print "DBG: \$h ... \$v->{volname}: ,$h ... $v->{volname},\n";
-        }
-    }
-}
 
 
 #TBD: Process the i/p file again, after @volumes has been filled.
@@ -75,8 +54,10 @@ while (<$infile>) {
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         my $volname = $1;
         my $lun  = $2;
-        #TBR my $hostname  = $3;
-        #TBR $stats{$volname}{hostname} = $hostname  ;
+        #TBR #TBR my $hostname  = $3;
+        #TBR #TBR $stats{$volname}{hostname} = $hostname  ;
+        my $hostname  = $3;
+        $stats{$volname}{hostname} = $hostname  ;
         $stats{$volname}{volname} = $volname  ;
         $stats{$volname}{lun} = $lun  ;
         next;
@@ -126,16 +107,6 @@ foreach my $v (@volumes) {
     print $stats{$v->{volname}}{wwn}, "\n";
 }
 
-print "\n\n\n   Print sorted by volname.\n";
-foreach my $v ( sort @volumes ) {
-    print $stats{$v->{volname}}{hostname}, ", ";
-    print $stats{$v->{volname}}{lun}, ", ";
-    print $stats{$v->{volname}}{volname}, ", ";
-    print $stats{$v->{volname}}{capacity}, ", ";
-    print $stats{$v->{volname}}{raid}, ", ";
-    print $stats{$v->{volname}}{pool}, ", ";
-    print $stats{$v->{volname}}{wwn}, "\n";
-}
 
 exit;
 
