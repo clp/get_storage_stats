@@ -26,6 +26,7 @@ my $input_file = $ARGV[0];
     #TBD die "no input_file found on command line\n\n", usage();
 #TBD }
 
+my @hosts;
 my @volumes;
 my %stats;
 my $volname;
@@ -42,7 +43,28 @@ while (<>) {
         push  @volumes, $stats{$volname};
         next;
     }
+    if ( m/Host:\s+(\S+)/ ) {
+        my $hostname = $1;
+        #DBG print "DBG-Tray regex: \$volname: ,$volname,\n";
+        #TBR $stats{$volname}{volname} = $volname  ;
+        push  @hosts, $hostname;
+        next;
+    }
 }  # End while #1.
+
+# Match volname to core host name pattern.
+foreach my $h (@hosts) {
+    $h =~ s/^cal-//;
+    $h =~ s/-.*$//;
+    #DBG print "DBG: \$h: ,$h,\n";
+    foreach my $v (@volumes) {
+        #DBG print "DBG: \$v->{volname}: ", ,$v->{volname},, "\n";
+        if ($v->{volname} =~ /$h/) {
+            $stats{$v->{volname}}{hostname} = $h;
+            #DBG print "DBG: \$h ... \$v->{volname}: ,$h ... $v->{volname},\n";
+        }
+    }
+}
 
 
 #TBD: Process the i/p file again, after @volumes has been filled.
@@ -53,8 +75,8 @@ while (<$infile>) {
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         my $volname = $1;
         my $lun  = $2;
-        my $hostname  = $3;
-        $stats{$volname}{hostname} = $hostname  ;
+        #TBR my $hostname  = $3;
+        #TBR $stats{$volname}{hostname} = $hostname  ;
         $stats{$volname}{volname} = $volname  ;
         $stats{$volname}{lun} = $lun  ;
         next;
@@ -79,10 +101,10 @@ $/ = '';
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
-    if ( m/\s+ Volume.name:\s+ (\S+).*?              # .*?  gets anything including newline, 
-                                                     #   until next text (Volume.handle),
-                                                     #   in non-greedy mode (the '?' suffix)
-      Volume.handle:\s+ \d+.*?                       # Data to skip; TBR?: Remove this line?
+    if ( m/\s+ Volume.name:\s+ (\S+).*?       # .*?  gets anything including newline,
+                                              #   until next text (Volume.handle),
+                                              #   in non-greedy mode (the '?' suffix)
+      Volume.handle:\s+ \d+.*?                # Data to skip; TBR?: Remove this line?
       Volume.WWN: \s+(\S+) .*? Status:/msx ) {
         my $volname = $1;
         my $wwn  = $2;
@@ -94,16 +116,26 @@ while (<$infile>) {
 
 
 print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
-foreach my $h (@volumes) {
-    print $stats{$h->{volname}}{hostname}, ", ";
-    print $stats{$h->{volname}}{lun}, ", ";
-    print $stats{$h->{volname}}{volname}, ", ";
-    print $stats{$h->{volname}}{capacity}, ", ";
-    print $stats{$h->{volname}}{raid}, ", ";
-    print $stats{$h->{volname}}{pool}, ", ";
-    print $stats{$h->{volname}}{wwn}, "\n";
+foreach my $v (@volumes) {
+    print $stats{$v->{volname}}{hostname}, ", ";
+    print $stats{$v->{volname}}{lun}, ", ";
+    print $stats{$v->{volname}}{volname}, ", ";
+    print $stats{$v->{volname}}{capacity}, ", ";
+    print $stats{$v->{volname}}{raid}, ", ";
+    print $stats{$v->{volname}}{pool}, ", ";
+    print $stats{$v->{volname}}{wwn}, "\n";
 }
 
+print "\n\n\n   Print sorted by volname.\n";
+foreach my $v ( sort @volumes ) {
+    print $stats{$v->{volname}}{hostname}, ", ";
+    print $stats{$v->{volname}}{lun}, ", ";
+    print $stats{$v->{volname}}{volname}, ", ";
+    print $stats{$v->{volname}}{capacity}, ", ";
+    print $stats{$v->{volname}}{raid}, ", ";
+    print $stats{$v->{volname}}{pool}, ", ";
+    print $stats{$v->{volname}}{wwn}, "\n";
+}
 
 exit;
 
