@@ -7,3 +7,8 @@ Revision history for Parse-StorageArrayLog
         Built two regex's to find seven of the eight fields 
         for the o/p stream.
 
+0.03    Wed2011_0824_19:56 
+        All functions working, o/p data looks good.
+        Changed data structure to key on volname instead of
+        hostname, since one host can have multiple volumes.
+
