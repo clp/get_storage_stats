@@ -2,7 +2,7 @@
 
 #TBD Design Note, Tue2011_0823_11:54 
 #TBD: Change data structure to array of refs to hashes.
-# Each array elt is a hostname, which is a ref to a hash.
+# Each array elt is a volname, which is a ref to a hash.
 # Each hash has keys for the 7 field names, and corresponding values.
 #
 use strict;
@@ -28,20 +28,21 @@ my $input_file = $ARGV[0];
     #TBD die "no input_file found on command line\n\n", usage();
 #TBD }
 
-my @hosts;
+my @volumes;
 my %stats;
 my $hostname;
+my $volname;
 
 
-# Read entire file & get hostnames & fill @hosts array.
+# Read entire file & get volnames & fill @volumes array.
 while (<>) {
     chomp;
     #DBG print "DBG: \$_: ,$_,\n";
-    if ( m/Host:\s+(\S+)/ ) {
-        $hostname = $1;
-        #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
-        $stats{$hostname}{hostname} = $hostname  ;
-        push  @hosts, $stats{$hostname};
+    if ( m/Volume name:\s+(\S+)/ ) {
+        $volname = $1;
+        #DBG print "DBG-Tray regex: \$volname: ,$volname,\n";
+        $stats{$volname}{volname} = $volname  ;
+        push  @volumes, $stats{$volname};
         next;
     }
 }  # End while #1.
@@ -49,7 +50,7 @@ while (<>) {
 
 # =begin comment
 
-#TBD: Process the i/p file again, after @hosts has been filled.
+#TBD: Process the i/p file again, after @volumes has been filled.
 #TBR # Read one paragraph at a time (a block separated by blank lines).
 #TBR $/ = '';
 my $infile;
@@ -59,13 +60,13 @@ while (<$infile>) {
     #TBD Wed2011_0824_14:53  : regex changed, now fails to match Tray lines.
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         my $volname = $1;
-        #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
+        #DBG print "DBG-Tray regex: \$volname: ,$volname,\n";
         my $lun  = $2;
         my $hostname  = $3;
-        $stats{$hostname}{hostname} = $hostname  ;
-        $stats{$hostname}{volname} = $volname  ;
-        $stats{$hostname}{lun} = $lun  ;
-        #TBR push  @hosts, $stats{$hostname};
+        $stats{$volname}{hostname} = $hostname  ;
+        $stats{$volname}{volname} = $volname  ;
+        $stats{$volname}{lun} = $lun  ;
+        #TBR push  @volumes, $stats{$hostname};
         next;
     }
 
@@ -77,10 +78,10 @@ while (<$infile>) {
         my $capacity  = $2;
         my $raid  = $3;
         my $pool  = $4;
-        $stats{$hostname}{hostname} = $hostname  ;
-        $stats{$hostname}{capacity} = $capacity  ;
-        $stats{$hostname}{raid} = $raid  ;
-        $stats{$hostname}{pool} = $pool  ;
+        $stats{$volname}{hostname} = $hostname  ;
+        $stats{$volname}{capacity} = $capacity  ;
+        $stats{$volname}{raid} = $raid  ;
+        $stats{$volname}{pool} = $pool  ;
         next;
     }
 }  # End while #2.
@@ -88,7 +89,7 @@ while (<$infile>) {
 
 # =begin comment
 
-#TBD: Process the i/p file again, after @hosts has been filled.
+#TBD: Process the i/p file again, after @volumes has been filled.
 # Read one paragraph at a time.
 $/ = '';
 # my $infile;
@@ -125,8 +126,8 @@ while (<$infile>) {
         #TBD: How do I know hostname already, at this point? Wed2011_0824_14:43  is it correct?
         #TBR? my $hostname = $stats{$volname}{hostname};
         #
-        $stats{$hostname}{volname} = $volname  ;
-        $stats{$hostname}{wwn} = $wwn  ;
+        $stats{$volname}{volname} = $volname  ;
+        $stats{$volname}{wwn} = $wwn  ;
         next;
     }
 
@@ -145,25 +146,25 @@ while (<$infile>) {
 
 # Print all stored data
 #DBG print "\nDBG: Dumper \$_:\n";
-#DBG foreach (@hosts) {
+#DBG foreach (@volumes) {
     #DBG print "DBG: \$_: ,$_,\n";
     #DBG print Dumper ($_);
     #F print Dumper (%{$_});
 #DBG }
 
 print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
-foreach my $h (@hosts) {
+foreach my $h (@volumes) {
     #DBG print "DBG-loop at each host array member: \%\$h: ",%$h,"\n";
-    print $stats{$h->{hostname}}{hostname}, ", ";
-    print $stats{$h->{hostname}}{lun}, ", ";
-    print $stats{$h->{hostname}}{volname}, ", ";
-    print $stats{$h->{hostname}}{capacity}, ", ";
-    print $stats{$h->{hostname}}{raid}, ", ";
-    print $stats{$h->{hostname}}{pool}, ", ";
-    print $stats{$h->{hostname}}{wwn}, "\n";
+    print $stats{$h->{volname}}{hostname}, ", ";
+    print $stats{$h->{volname}}{lun}, ", ";
+    print $stats{$h->{volname}}{volname}, ", ";
+    print $stats{$h->{volname}}{capacity}, ", ";
+    print $stats{$h->{volname}}{raid}, ", ";
+    print $stats{$h->{volname}}{pool}, ", ";
+    print $stats{$h->{volname}}{wwn}, "\n";
 
     #DBG foreach my $k ( keys %$h ){
-    #DBG print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{hostname}}{$k}, "\n";
+    #DBG print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{volname}}{$k}, "\n";
     #DBG }
     #DBG print "\n";
 }
