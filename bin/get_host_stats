@@ -22,17 +22,16 @@ $prog =~ s{\A.*/}{};    # strip leading path, if any
 # Cannot specify multiple i/p files w/ this fix.
 my $input_file = $ARGV[0];
 
-#TBD unless ($input_file) {
-    #TBD die "no input_file found on command line\n\n", usage();
-#TBD }
+unless ($input_file) {
+    die "no input_file found on command line\n\n", usage();
+}
 
 my @hosts;
-my @volumes;
 my %stats;
 my $volname;
 
 
-# Read entire file & get volnames & fill @volumes array.
+# Read entire file & get volnames.
 while (<>) {
     chomp;
     #DBG print "DBG: \$_: ,$_,\n";
@@ -40,13 +39,12 @@ while (<>) {
         $volname = $1;
         #DBG print "DBG-Tray regex: \$volname: ,$volname,\n";
         $stats{$volname}{volname} = $volname  ;
-        push  @volumes, $stats{$volname};
         next;
     }
 }  # End while #1.
 
 
-#TBD: Process the i/p file again, after @volumes has been filled.
+#TBD: Process the i/p file again, after volnames have been found.
 my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
@@ -54,8 +52,6 @@ while (<$infile>) {
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         my $volname = $1;
         my $lun  = $2;
-        #TBR #TBR my $hostname  = $3;
-        #TBR #TBR $stats{$volname}{hostname} = $hostname  ;
         my $hostname  = $3;
         $stats{$volname}{hostname} = $hostname  ;
         $stats{$volname}{volname} = $volname  ;
@@ -76,17 +72,15 @@ while (<$infile>) {
 }  # End while #2.
 
 
-#TBD: Process the i/p file again, after @volumes has been filled.
 # Read one paragraph at a time.
 $/ = '';
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
-    if ( m/\s+ Volume.name:\s+ (\S+).*?       # .*?  gets anything including newline,
-                                              #   until next text (Volume.handle),
-                                              #   in non-greedy mode (the '?' suffix)
-      Volume.handle:\s+ \d+.*?                # Data to skip; TBR?: Remove this line?
-      Volume.WWN: \s+(\S+) .*? Status:/msx ) {
+    if ( m/\s+ Volume.name:\s+ (\S+).*       # .*  gets anything including newline,
+                                             #   until next anchor text (Volume.WWN).
+      Volume.WWN: \s+(\S+) .*                # Capture value of WWN 
+      Status:/msx ) {                        # /s: allows dot to match newline.
         my $volname = $1;
         my $wwn  = $2;
         $stats{$volname}{volname} = $volname  ;
@@ -96,16 +90,18 @@ while (<$infile>) {
 }  # End while() #3.
 
 
+print "\n  Try #2: sort by volname, almost (suffix digits are a problem): 1, 10, 11, 2,3,4\n";
 print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
-foreach my $v (@volumes) {
-    print $stats{$v->{volname}}{hostname}, ", ";
-    print $stats{$v->{volname}}{lun}, ", ";
-    print $stats{$v->{volname}}{volname}, ", ";
-    print $stats{$v->{volname}}{capacity}, ", ";
-    print $stats{$v->{volname}}{raid}, ", ";
-    print $stats{$v->{volname}}{pool}, ", ";
-    print $stats{$v->{volname}}{wwn}, "\n";
-}
+  my @sorted_volnames = sort map { $stats{$_}->{volname} } keys %stats;
+  foreach my $v ( @sorted_volnames ) {
+    print $stats{$v}{hostname}, ", ";
+    print $stats{$v}{lun}, ", ";
+    print $stats{$v}{volname}, ", ";
+    print $stats{$v}{capacity}, ", ";
+    print $stats{$v}{raid}, ", ";
+    print $stats{$v}{pool}, ", ";
+    print $stats{$v}{wwn}, "\n";
+  }
 
 
 exit;
@@ -113,21 +109,12 @@ exit;
 
 sub usage {
     return <<"eousage";
-usage $prog: [options] <log_files>
+Usage
+  $prog <status_file>
 
-$prog is a filter for Storage Array TBD:config|status|log files.
-It searches for host names and presents desired data about them.
+$prog is a filter for storage array status files.
+It searches for host and volume names and presents data about them.
 
-Options to control the matching
-
-
-Output options
-
--number-output  flag     emit the line number of the matching line on output
-
--start-column   int      Control what portion of the matching line is displayed.
-                         start-column gives the first column of the output line displayed.
--output-length  int      Length of the output line before line numbering, if any.
 eousage
 }
 
