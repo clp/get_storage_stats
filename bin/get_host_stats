@@ -1,7 +1,6 @@
 #! /usr/bin/env perl
 
-#TBD Design Note, Tue2011_0823_11:54 
-#TBD: Change data structure to array of refs to hashes.
+# Main data structure is an array of refs to hashes.
 # Each array elt is a volname, which is a ref to a hash.
 # Each hash has keys for the 7 field names, and corresponding values.
 #
@@ -12,10 +11,9 @@ use warnings;
 
 use Data::Dumper;
 
-#TBD use Parse::StorageArrayLog qw/match_line/;
 #TBD use Parse::StorageArrayLog;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
@@ -30,7 +28,6 @@ my $input_file = $ARGV[0];
 
 my @volumes;
 my %stats;
-my $hostname;
 my $volname;
 
 
@@ -48,37 +45,26 @@ while (<>) {
 }  # End while #1.
 
 
-# =begin comment
-
 #TBD: Process the i/p file again, after @volumes has been filled.
-#TBR # Read one paragraph at a time (a block separated by blank lines).
-#TBR $/ = '';
 my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
-    #TBD Wed2011_0824_14:53  : regex changed, now fails to match Tray lines.
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         my $volname = $1;
-        #DBG print "DBG-Tray regex: \$volname: ,$volname,\n";
         my $lun  = $2;
         my $hostname  = $3;
         $stats{$volname}{hostname} = $hostname  ;
         $stats{$volname}{volname} = $volname  ;
         $stats{$volname}{lun} = $lun  ;
-        #TBR push  @volumes, $stats{$hostname};
         next;
     }
 
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
-        #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
-        #TBD.Wed2011_0824_15:04 : How to get correct $hostname here, to store data?
-        #   Use the table linking volname and hostname?
         my $volname = $1;
         my $capacity  = $2;
         my $raid  = $3;
         my $pool  = $4;
-        $stats{$volname}{hostname} = $hostname  ;
         $stats{$volname}{capacity} = $capacity  ;
         $stats{$volname}{raid} = $raid  ;
         $stats{$volname}{pool} = $pool  ;
@@ -87,74 +73,28 @@ while (<$infile>) {
 }  # End while #2.
 
 
-# =begin comment
-
 #TBD: Process the i/p file again, after @volumes has been filled.
 # Read one paragraph at a time.
 $/ = '';
-# my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
-    #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/smx ) {
-    #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/mx ) {
-    #F if ( m/Volume name:\s (\S+)\s+ Volume handle:\s Volume WWN: \s+(\S+)  \s+ Status:/x ) {
-    #
-    #TBD: Maybe do separate read loop of full file for this search only?
-    #
-    #F if ( m/\s+ Volume.name:\s+ (\S+) \s+ Volume.handle:\s+ \d+/x ){
-    #F if ( m/\s+ Volume.name:\s+ (\S+).* Volume.handle:\s+ \d+/msx ){
     if ( m/\s+ Volume.name:\s+ (\S+).*?              # .*?  gets anything including newline, 
                                                      #   until next text (Volume.handle),
                                                      #   in non-greedy mode (the '?' suffix)
       Volume.handle:\s+ \d+.*?                       # Data to skip; TBR?: Remove this line?
       Volume.WWN: \s+(\S+) .*? Status:/msx ) {
-      ### \s+ Volume.handle:\s+ Volume.WWN: \s+(\S+)  \s+ Status:/x ) {
-        #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
         my $volname = $1;
         my $wwn  = $2;
-        #DBG values:
-        #TBF.Need hostname in this scope; $hostname = $volname =~ /.*/;
-        #TMP $volname = 'abcde';
-        #TBR my $wwn = 12345;
-        #
-        #TBD: Look for hostname that matches volname, & use its hash to store volname.
-        #? $hostname = grep $volname, $stats{$hostname}{hostname};
-        #F my $ho = grep $volname, @hosts;
-        #F my $ho = grep {/$volname/}  keys %stats;
-        #
-        #TBD: How do I know hostname already, at this point? Wed2011_0824_14:43  is it correct?
-        #TBR? my $hostname = $stats{$volname}{hostname};
-        #
         $stats{$volname}{volname} = $volname  ;
         $stats{$volname}{wwn} = $wwn  ;
         next;
     }
+}  # End while() #3.
 
-# Volume name: rssg101-smbzfs-dev
-      # Volume handle: 25
-      # Volume WWN: 600A0B800047644600000C0F49D9B6BB
-      # Status: Optimal
-
-    #TBD: Write code to Get WWN.
-    #
-# =end comment
-
-# =cut
-
-}  # End while() #2.
-
-# Print all stored data
-#DBG print "\nDBG: Dumper \$_:\n";
-#DBG foreach (@volumes) {
-    #DBG print "DBG: \$_: ,$_,\n";
-    #DBG print Dumper ($_);
-    #F print Dumper (%{$_});
-#DBG }
 
 print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
 foreach my $h (@volumes) {
-    #DBG print "DBG-loop at each host array member: \%\$h: ",%$h,"\n";
     print $stats{$h->{volname}}{hostname}, ", ";
     print $stats{$h->{volname}}{lun}, ", ";
     print $stats{$h->{volname}}{volname}, ", ";
@@ -162,11 +102,6 @@ foreach my $h (@volumes) {
     print $stats{$h->{volname}}{raid}, ", ";
     print $stats{$h->{volname}}{pool}, ", ";
     print $stats{$h->{volname}}{wwn}, "\n";
-
-    #DBG foreach my $k ( keys %$h ){
-    #DBG print "DBG: \$k => \$stats{\$k}:  ", $k , "=> ",  $stats{$h->{volname}}{$k}, "\n";
-    #DBG }
-    #DBG print "\n";
 }
 
 
