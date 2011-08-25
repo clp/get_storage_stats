@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Wed 2011 Aug 24 02:23:39 PMPM clpoda> 
+	# Time-stamp: <Wed 2011 Aug 24 06:52:23 PMPM clpoda> 
 
 
 Observations.
@@ -52,6 +52,18 @@ Notes.
 			Push every unique hostname found there into the AoH.
 		TBD: How to ensure that array has one entry per hostname?
 			Verify that only unique hostnames are pushed onto AoH.
+	n.2. How to find patterns that extend across 2 or more lines.
+		: Wed2011_0824_18:41 
+		Set Input Record Separator to blank, before reading data: $/='';
+			Then while(<>) reads a paragraph instead of a single line.
+			Paragraph is text separated by blank lines before & after.
+			Default IRS value is newline.
+		Then read the input paragraph.
+		Then use pattern match modifier 's', which allows dot to match newline.
+		Enter that atom (.*) in the regex when a newline appears in the text.
+			$line =~ m/line1\sFindMe.*line2AndFindMe.*line3AndMeToo/s
+
+
 
 
 Analysis of grep3.to.get.luns shell script.

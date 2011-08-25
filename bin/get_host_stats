@@ -50,25 +50,30 @@ while (<>) {
 # =begin comment
 
 #TBD: Process the i/p file again, after @hosts has been filled.
-# Read one paragraph at a time (a block separated by blank lines).
-$/ = '';
+#TBR # Read one paragraph at a time (a block separated by blank lines).
+#TBR $/ = '';
 my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
-    if ( m/^([\S]+)\s+(\d+)\s+Tray/ ) {
-        $hostname = $1;
+    #TBD Wed2011_0824_14:53  : regex changed, now fails to match Tray lines.
+    if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
+        my $volname = $1;
         #DBG print "DBG-Tray regex: \$hostname: ,$hostname,\n";
         my $lun  = $2;
+        my $hostname  = $3;
         $stats{$hostname}{hostname} = $hostname  ;
+        $stats{$hostname}{volname} = $volname  ;
         $stats{$hostname}{lun} = $lun  ;
-        push  @hosts, $stats{$hostname};
+        #TBR push  @hosts, $stats{$hostname};
         next;
     }
 
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         #TBD: Is 'RAID' always there, or can a different alpha(numeric?symbols?) string be there?
-        $volname = $1;
+        #TBD.Wed2011_0824_15:04 : How to get correct $hostname here, to store data?
+        #   Use the table linking volname and hostname?
+        my $volname = $1;
         my $capacity  = $2;
         my $raid  = $3;
         my $pool  = $4;
@@ -86,7 +91,7 @@ while (<$infile>) {
 #TBD: Process the i/p file again, after @hosts has been filled.
 # Read one paragraph at a time.
 $/ = '';
-my $infile;
+# my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
@@ -116,7 +121,10 @@ while (<$infile>) {
         #? $hostname = grep $volname, $stats{$hostname}{hostname};
         #F my $ho = grep $volname, @hosts;
         #F my $ho = grep {/$volname/}  keys %stats;
-        my $hostname = $stats{$volname}{hostname};
+        #
+        #TBD: How do I know hostname already, at this point? Wed2011_0824_14:43  is it correct?
+        #TBR? my $hostname = $stats{$volname}{hostname};
+        #
         $stats{$hostname}{volname} = $volname  ;
         $stats{$hostname}{wwn} = $wwn  ;
         next;
