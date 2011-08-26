@@ -91,7 +91,7 @@ while (<$infile>) {
 
 
 # Sort on 2 keys: first hostname, then lun.
-print "hostname, lun, volname, capacity, RAID level, pool, WWN\n";
+print "Hostname, LUN, Volume Name, Capacity, RAID level, Pool, WWN\n";
     my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
     my @sorted_host_lun;
     @sorted_host_lun = sort 
