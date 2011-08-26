@@ -13,7 +13,7 @@ use Data::Dumper;
 
 #TBD use Parse::StorageArrayLog;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
@@ -110,7 +110,6 @@ print "hostname, lun, volname, capacity, RAID level, pool, WWN\n";
     }
 
 
-
 exit;
 
 
@@ -134,6 +133,6 @@ eousage
 #TBD: Sample data: WWN data:
 # Volume name: rssg101-smbzfs-dev
       # Volume handle: 25
-      # Volume WWN: 600A0B800047644600000C0F49D9B6BB
+      # Volume WWN: BOGUSB800047644600000C0F49DBOGUS
       # Status: Optimal
 
