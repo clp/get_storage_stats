@@ -1,6 +1,6 @@
 dws_note.1.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/parse2011
-	# Time-stamp: <Mon 2011 Aug 22 05:58:49 PMPM clpoda> 
+	# Time-stamp: <Fri 2011 Aug 26 11:25:13 AMAM clpoda> 
 	Notes from dws on s/w tool.
 
 
@@ -76,5 +76,21 @@ the "fields" from my perspective, size and raid type are space separated fields 
 the source file.
  
 hostname  lun#   volume_name  size  raidtype  raid_profile  lun_wwn
+
+
+
+
+###
+
+
+Wed 24 Aug 2011 04:51:14 PM PDT
+
+Q: Can I use The Mappings Table to find what volume name
+relates to what host name?  It has a column 'Accessible By'
+that seems to show the host name.
+
+A: This probably works but it assumes that a domain is a host name. This is not required.
+
+
 
 
