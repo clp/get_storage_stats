@@ -12,3 +12,15 @@ Revision history for Parse-StorageArrayLog
         Changed data structure to key on volname instead of
         hostname, since one host can have multiple volumes.
 
+0.04    Wed2011_0824_19:56 
+        Use pattern matching to link volname and hostname.
+
+0.05    Fri2011_0826_14:39 
+        Sort the output based on hostname, then LUN.
+        Prior sort based on volname did not handle numeric
+        suffixes when they included both 1 and 2 digits.
+
+        Prior approach of using pattern matching to link 
+        volname and hostname did not apply when the two 
+        names had nothing in common, so that was abandoned.
+
