@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Wed 2011 Aug 24 10:29:41 PMPM clpoda> 
+	# Time-stamp: <Thu 2011 Aug 25 06:49:11 PMPM clpoda> 
 
 
 Observations.
@@ -111,6 +111,13 @@ Questions.
 		The orig s/w shows: hostname, lun, volname, capacity, RAID type, RAID profile, pool.
 		Sent email query to dws, to use Mappings Table for volname<->hosname.
 			: Wed2011_0824_14:23 
+	q.3. How to sort o/p? hostname then lun may be better than volname.
+		: Thu2011_0825_18:45 
+		Sort by volname has problems when suffix goes from 1 to 2 digits:
+			a1, a10, a11, a12, ..., a2, a3, a4.
+			To fix this requires fancy Perl coding, which is a good learning experience.
+			Maybe do it later.
+		Sort by hostname (alpha) then lun (numeric) might give good results w/ simpler code.
 
 Bugs
 	Fixed.b.1. Using volname instead of hostname.
@@ -121,7 +128,7 @@ Bugs
 			: Wed2011_0824_22:27 
 
 
-Bug in grep3.
+Bug in grep3.to.get.luns script.
 	: Mon2011_0822_17:53 
 	Bug report from dws.
 	Three o/p lines below show the problem.
