@@ -92,16 +92,59 @@ while (<$infile>) {
 
 print "\n  Try #2: sort by volname, almost (suffix digits are a problem): 1, 10, 11, 2,3,4\n";
 print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
-  my @sorted_volnames = sort map { $stats{$_}->{volname} } keys %stats;
-  foreach my $v ( @sorted_volnames ) {
-    print $stats{$v}{hostname}, ", ";
-    print $stats{$v}{lun}, ", ";
-    print $stats{$v}{volname}, ", ";
-    print $stats{$v}{capacity}, ", ";
-    print $stats{$v}{raid}, ", ";
-    print $stats{$v}{pool}, ", ";
-    print $stats{$v}{wwn}, "\n";
-  }
+    #ORG my @sorted_volnames = sort map { $stats{$_}->{volname} } keys %stats;
+    my @sorted_volnames;
+    my @unsorted_volnames;
+    @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
+    #F my @sorted_volnames = sort map { $stats{$a}->{volname} cmp $stats{$b}->{volname} } keys %stats;
+    #? my @sorted_volnames = sort { $stats{$a}->{volname} cmp $stats{$b}->{volname} } @unsorted_volnames;
+    #F @sorted_volnames = sort { $a cmp $b } @unsorted_volnames;
+    #F @sorted_volnames = sort { $a <=> $b } @unsorted_volnames;
+    @sorted_volnames = sort { $a cmp $b } @unsorted_volnames;
+    foreach my $v ( @sorted_volnames ) {
+        print $stats{$v}{hostname}, ", ";
+        print $stats{$v}{lun}, ", ";
+        print $stats{$v}{volname}, ", ";
+        print $stats{$v}{capacity}, ", ";
+        print $stats{$v}{raid}, ", ";
+        print $stats{$v}{pool}, ", ";
+        print $stats{$v}{wwn}, "\n";
+    }
+
+print "\n  Try #3: sort w/ 2 keys: hostname then lun.";
+# Sort on 2 keys: first hostname, then lun.
+# Write to o/p file.
+#TBD: system "sort " # How to sort on two keys simultaneously w/ UNIX sort?
+#
+print "hostname, lun, volname, capacity, RAID level, pool, WWN\n\n";
+    #ORG my @sorted_volnames = sort map { $stats{$_}->{volname} } keys %stats;
+    my @sorted_volnames;
+    my @unsorted_volnames;
+    ###
+    #TBF: Copied sample code, fix it.
+    my (@new, @old);
+                       @new = map { $_->[0] }
+                          sort { $b->[1] <=> $a->[1]
+                                          ||
+                                 $a->[2] cmp $b->[2]
+                          } map { [$_, /=(\d+)/, uc($_)] } @old;
+    ###
+
+    @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
+    #F my @sorted_volnames = sort map { $stats{$a}->{volname} cmp $stats{$b}->{volname} } keys %stats;
+    #? my @sorted_volnames = sort { $stats{$a}->{volname} cmp $stats{$b}->{volname} } @unsorted_volnames;
+    #F @sorted_volnames = sort { $a cmp $b } @unsorted_volnames;
+    #F @sorted_volnames = sort { $a <=> $b } @unsorted_volnames;
+    @sorted_volnames = sort { $a cmp $b } @unsorted_volnames;
+    foreach my $v ( @sorted_volnames ) {
+        print $stats{$v}{hostname}, ", ";
+        print $stats{$v}{lun}, ", ";
+        print $stats{$v}{volname}, ", ";
+        print $stats{$v}{capacity}, ", ";
+        print $stats{$v}{raid}, ", ";
+        print $stats{$v}{pool}, ", ";
+        print $stats{$v}{wwn}, "\n";
+    }
 
 
 exit;
