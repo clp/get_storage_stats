@@ -1,0 +1,32 @@
+rxsg102-zoneroots-2     	Optimal	150 GB      	RAID 5    	24   	FCRaid5              	
+rxsg102-zoneroots-19     	Optimal	42 GB      	RAID 5    	24   	FCRaid5              	
+rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
+rxsg112-zoneroots-1     	Optimal	142 GB      	RAID 5    	24   	FCRaid5              	
+
+rxsg112-zoneroots-1       0   Tray.85.Controller.A  cal-rxsg112             Optimal       
+rxsg102-zoneroots-2       0   Tray.85.Controller.A  cal-rxsg102             Optimal       
+rxsg102-zoneroots-19       10   Tray.85.Controller.A  cal-rxsg102             Optimal       
+rxsg102-zoneroots       	4  	Tray.85.Controller.A	cal-rxsg102           	Optimal      	
+Access Volume           	31 	N/A                 	cal-rxsg102           	Enabled      	
+   Host: cal-rxsg112
+   Host: cal-rxsg102
+
+   Volume name: rxsg112-zoneroots-1
+      Volume handle: 49
+      Volume WWN: BOGUSB8000476446000015B24C8BOGUS
+      Status: Optimal
+
+   Volume name: rxsg102-zoneroots
+      Volume handle: 27
+      Volume WWN: BOGUSB800047644600000C1549DBOGUS
+      Status: Optimal
+
+   Volume name: rxsg102-zoneroots-2
+      Volume handle: 49
+      Volume WWN: BOGUSB8000476446000015B24C8BOGUS
+      Status: Optimal
+
+   Volume name: rxsg102-zoneroots-19
+      Volume handle: 49
+      Volume WWN: BOGUSB8000476446000015B24C8BOGUS
+      Status: Optimal
