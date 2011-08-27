@@ -41,6 +41,11 @@ while (<>) {
 
 # Process the i/p file again, after volnames have been found,
 # to get other data fields.
+#
+# Note: 
+# The field used here for hostname is really domain name, 
+# which need not be the same as the hostname.  This solution
+# is OK for now, according to the user.
 my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
@@ -74,10 +79,10 @@ $/ = ''; # Read one paragraph at a time.
 
 while (<$infile>) {
     chomp;
-    if ( m/\s+ Volume.name:\s+ (\S+).*       # .*  gets anything including newline,
-                                             #   until next anchor text (Volume.WWN).
-            Volume.WWN: \s+(\S+) .*          # Capture value of WWN 
-            Status:/msx ) {                  # /s: allows dot to match newline.
+    if ( m/\s+ Volume.name:\s+ (\S+).*  # .*  gets anything including newline,
+                                        # until next anchor text (Volume.WWN).
+            Volume.WWN: \s+(\S+) .*     # Capture value of WWN 
+            Status:/msx ) {             # /s: allows dot to match newline.
         my $volname = $1;
         my $wwn  = $2;
         $stats{$volname}{wwn} = $wwn  ;

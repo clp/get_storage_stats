@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Fri 2011 Aug 26 04:15:21 PMPM clpoda> 
+	# Time-stamp: <Sat 2011 Aug 27 09:34:27 AMAM clpoda> 
 
 
 Observations.
@@ -26,9 +26,9 @@ Plan.
 				%child: host-123{lun} = 4
 			Child's Keys are names of each field.
 				$host{hostname} = $hostname, etc.
-	TBD: Any cmd line args desired besides i/p file name?
+	Any cmd line args desired besides i/p file name? > No.
 	Open the i/p file.
-	Read loop1: one line or more? TBD: Read entire file?
+	Read loop1: one line or more?
 		Must use more than 1 line to find Name & WWN pair.
 		If a multi-line pattern matches /Volume name:...Status:/
 			Save volname => wwn in hash.
@@ -42,22 +42,24 @@ Plan.
 	
 
 Notes.
-	n.1. Change data structure to AoH refs.
+	n.1. Change data structure to AoH refs; then to HoH.
 		: Tue2011_0823_12:00 
 		Now changing code in new branch off work branch: use_AoH.
 		Each array elt is a hostname, which is a ref to a hash.
 		Each hash has keys for the 7 field names, and corresponding values.
-		TBD: How to ensure that all hostnames are gathered?
+		How to ensure that all hostnames are gathered?
 			Assume that the 'hostname ... Tray' lines have all hostnames.
 			Push every unique hostname found there into the AoH.
-		TBD: How to ensure that array has one entry per hostname?
+			Soln: Use lines w/ "Host: <hostname>".
+		How to ensure that array has one entry per hostname?
 			Verify that only unique hostnames are pushed onto AoH.
+		Final code (v0.05, Sat2011_0827_09:25 ) uses HoH.
 	n.2. How to find patterns that extend across 2 or more lines.
 		: Wed2011_0824_18:41 
 		Set Input Record Separator to blank, before reading data: $/='';
-			Then while(<>) reads a paragraph instead of a single line.
+			Then the 'while(<>)' cmd reads a paragraph instead of a single line.
 			Paragraph is text separated by blank lines before & after.
-			Default IRS value is newline.
+			Default Input Record Separator-IRS value is newline.
 		Then read the input paragraph.
 		Then use pattern match modifier 's', which allows dot to match newline.
 		Enter that atom (.*) in the regex when a newline appears in the text.
@@ -120,11 +122,13 @@ Questions.
 		The orig s/w shows: hostname, lun, volname, capacity, RAID type, RAID profile, pool.
 		Sent email query to dws, to use Mappings Table for volname<->hosname.
 			: Wed2011_0824_14:23 
-	q.3. How to sort o/p? hostname then lun may be better than volname.
+	q.3. How to sort o/p? Sort by hostname then by lun, may be better than volname.
 		: Thu2011_0825_18:45 
 		Sort by volname has problems when suffix goes from 1 to 2 digits:
 			a1, a10, a11, a12, ..., a2, a3, a4.
 			To fix this requires fancy Perl coding, which is a good learning experience.
+			Split the volname string into base+suffix of 1-2 digits.
+			Sort using base then suffix.
 			Maybe do it later.
 		Sort by hostname (alpha) then lun (numeric) might give good results w/ simpler code.
 
