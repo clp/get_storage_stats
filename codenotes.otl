@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Sat 2011 Aug 27 09:34:27 AMAM clpoda> 
+	# Time-stamp: <Sun 2011 Aug 28 07:19:59 AMAM clpoda> 
 
 
 Observations.
@@ -8,8 +8,6 @@ Observations.
 		Some are on the same line as the search term.
 		Some are in blocks of text, indented below the search term on a header line.
 		So I cannot simply search for a term, grab some lines w/ it, & combine them.
-
-
 Plan.
 	Decide on the data structure to hold o/p data.
 		i.1. Anon array of anon hash refs.
@@ -40,7 +38,6 @@ Plan.
 	Print o/p: Loop: foreach Hostname 
 		Hostname,  LUN,  $j=$hostlunvol=VolumeName,  Capacity+Units, RAID Level, Pool,  WWN
 	
-
 Notes.
 	n.1. Change data structure to AoH refs; then to HoH.
 		: Tue2011_0823_12:00 
@@ -76,7 +73,25 @@ Notes.
 		But, removing the 'x' pattern modifier suffix in the 'like...'
 		statement allows me to use spaces in the pattern, if they exactly
 		match spaces in the test data.
-
+ToDo
+	t.1. Update template README w/ real text abt the project.
+		: Sat2011_0827_10:14 
+	t.2. Update template t/ tests w/ real data abt the project.
+		: Sat2011_0827_10:14 
+	t.3. Update any other template files real data abt the project.
+		: Sat2011_0827_10:15 
+		Template Files were made by Module::Install.
+	t.4. Divide code into driver and module.
+		: Sun2011_0828_07:16 
+		Design module for re-use, w/ API.
+	t.5. Rename the module?
+		: Sun2011_0828_07:17 
+		It parses a status file, not a log file.
+	t.6. Write the same functionality using the Table Data Struct, per dimar at Perlmonks.
+	t.7. Write the same functionality with a minimal script, maybe a 1-liner.
+		: Sun2011_0828_07:18 
+		Maybe write the detailed code in a module, so the 1-liner is simple,
+			perl -MParse::StorageArrayStats ...
 Analysis of grep3.to.get.luns shell script.
 	awk: Search for Volume name & Volume WWN in the block data, in this form:
 		Volume name: rxsg102-zoneroots-2
@@ -105,7 +120,6 @@ Analysis of grep3.to.get.luns shell script.
 				Hostname  LUN  $j=$hostlunvol  Capacity+Units RAID Level Pool  WWN
 		done
 	done
-
 Questions.
 	q.1. How to step through a shell script single line at a time.
 		: Mon2011_0822_19:04 
@@ -131,7 +145,6 @@ Questions.
 			Sort using base then suffix.
 			Maybe do it later.
 		Sort by hostname (alpha) then lun (numeric) might give good results w/ simpler code.
-
 Bugs
 	Fixed.b.1. Using volname instead of hostname.
 		: Wed2011_0824_14:04 
@@ -139,7 +152,6 @@ Bugs
 		the o/p shows volname where it should show hostname.
 		Fixed by using volname instead of hostname to identify each data record.
 			: Wed2011_0824_22:27 
-
 
 Bug in grep3.to.get.luns script.
 	: Mon2011_0822_17:53 
@@ -154,10 +166,6 @@ Bug in grep3.to.get.luns script.
 	It is the only o/p line I see in o/p from cal*111* i/p file w/ two digits between field 1 & field 4.
 		Other o/p lines have only one digit btwn field 1 & field 3 (two names).
 		Maybe caused by bad parsing.
-
-
-
-
 ### Source code of grep3.to.get.luns
     #!/bin/sh 
     FILE=$1
