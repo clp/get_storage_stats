@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Sun 2011 Aug 28 07:19:59 AMAM clpoda> 
+	# Time-stamp: <Sun 2011 Aug 28 10:42:17 PMPM clpoda> 
 
 
 Observations.
@@ -92,6 +92,30 @@ ToDo
 		: Sun2011_0828_07:18 
 		Maybe write the detailed code in a module, so the 1-liner is simple,
 			perl -MParse::StorageArrayStats ...
+	t.8. How to handle variations on the main design of get_host_stats?
+		Want to keep master branch's design as-is.
+			Or maybe update it w/ specific code used in other branches?
+			Or maybe add good common code into master, then other branches merge it.
+		Ideas for other designs of the get_host_stats code base.
+			Using Table data structure.
+			A minimal version-maybe a 1-liner.
+			A module version.
+		1. Make them into separate branches off git master branch?
+			Keep the commits very small & specific.
+				So a commit can be cherry-picked to update master if desired.
+				I guess other branches could also cherry-pick them w/ careful merging.
+			Keep the branches separate & never merge w/ master.
+		2. Make them into separate dirs at ~/p, and separate github repos.
+			Clone the pkg from github into a diff dir tree on batbug.
+			More difficult to sync useful changes among the diff code bases.
+			Make >= 1 module w/ the base code that all others would use.
+				Call it from each specific driver, which has the customization?
+				I don't see how that would work-the core code differs in the diff designs.
+				Maybe diff drivers use diff modules & only one core module is shared.
+		3. Make them into separate dirs at ~/p, and separate github repos.
+
+
+
 Analysis of grep3.to.get.luns shell script.
 	awk: Search for Volume name & Volume WWN in the block data, in this form:
 		Volume name: rxsg102-zoneroots-2
