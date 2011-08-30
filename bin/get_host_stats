@@ -65,22 +65,17 @@ while (<$f>) {
 
 
 # To print, sort on 2 keys: first hostname, then lun.
+my @columns = qw( hostname lun volname capacity raid pool wwn);
 print "Hostname, LUN, Volume Name, Capacity, RAID level, Pool, WWN\n";
     my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
-    my @sorted_host_lun;
-    @sorted_host_lun = sort 
+    my @sorted_host_lun = sort 
             { $stats{$a}{hostname} cmp $stats{$b}{hostname}
                                     ||
               $stats{$a}{lun} <=> $stats{$b}{lun}
             } @unsorted_volnames;
     foreach my $v ( @sorted_host_lun ) {
-        print $stats{$v}{hostname}, ", ";
-        print $stats{$v}{lun}, ", ";
-        print $stats{$v}{volname}, ", ";
-        print $stats{$v}{capacity}, ", ";
-        print $stats{$v}{raid}, ", ";
-        print $stats{$v}{pool}, ", ";
-        print $stats{$v}{wwn}, "\n";
+        print ( $stats{$v}{$columns[$_]}, ", " ) for (0..$#columns);
+        print "\n";
     }
 
 
