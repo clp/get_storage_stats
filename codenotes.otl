@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Mon 2011 Aug 29 07:15:22 PMPM clpoda> 
+	# Time-stamp: <Mon 2011 Aug 29 11:33:51 PMPM clpoda> 
 
 
 Observations.
@@ -95,7 +95,10 @@ ToDo
 	t.8. How to handle variations on the main design of get_host_stats?
 		Want to keep master branch's design as-is.
 			Or maybe update it w/ specific code used in other branches?
-			Or maybe add good common code into master, then other branches merge it.
+			Or maybe add good common code into master, then other branches merge it as desired.
+			Keep master branch stable; use other branches for new design (v2, v3) & bug fixes.
+			Add bug fixes to master as required.
+			Add design changes to master; or make a new tree for a drastic new design.
 		Ideas for other designs of the get_host_stats code base.
 			Using Table data structure.
 			A minimal version-maybe a 1-liner.
