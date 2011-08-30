@@ -3,11 +3,7 @@
 use strict;
 use warnings;
 
-# use Getopt::Long;
-
-use Data::Dumper;
-
-#TBD use Parse::StorageArrayLog;
+# use Parse::StorageArrayLog;
 
 our $VERSION = '0.05';
 
@@ -128,12 +124,14 @@ eousage
 }
 
 
-#TBD: Sample data: RAID line:
+# Sample data: RAID line:
 # rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
 # rssg101-smbzfs-dev      	Optimal	1,394.482 GB	RAID 5    	26   	FCRaid5              	
-#TBD: Sample data: Tray line:
+#
+# Sample data: Tray line:
 # rssg111-smbzfs-dev      	2  	Tray.85.Controller.A	cal-rssg111           	Optimal      	
-#TBD: Sample data: WWN data:
+#
+# Sample data: WWN data:
 # Volume name: rssg101-smbzfs-dev
       # Volume handle: 25
       # Volume WWN: BOGUSB800047644600000C0F49DBOGUS

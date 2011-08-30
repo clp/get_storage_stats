@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Sun 2011 Aug 28 10:42:17 PMPM clpoda> 
+	# Time-stamp: <Mon 2011 Aug 29 07:15:22 PMPM clpoda> 
 
 
 Observations.
@@ -128,10 +128,11 @@ Analysis of grep3.to.get.luns shell script.
 		hostlunvol: Search for line w/ Host name and 'Tray', in this form:
 			rxsg102-zoneroots       	4  	Tray.85.Controller.A	cal-rxsg102           	Optimal      	
 				To find entries in the Mappings table, to get LUN at field 2.
-			TBD: Why use the 'sort' cmd?
+			Q: Why use the 'sort' cmd?
+				A: To handle lines w/ same host, diff LUN.
 		loop $j: $hostlunvol.
-			TBD: What is in $hostlunvol: hostname, LUN, or a combination, or other?
-			TBD: What is ${j}?
+			Q: What is in $hostlunvol: hostname, LUN, or a combination, or other?
+			Q: What is ${j}?
 			sizdrd: (5 fields).
 				To find data in the Standard Volumes table, 8 fields per entry, in this form:
 					rxsg102-zoneroots       	Optimal	50 GB       	RAID 5    	24   	FCRaid5              	
