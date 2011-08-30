@@ -26,10 +26,6 @@ my $volname;
 
 # Process the i/p file by one line at a time.
 #
-# Note: 
-# The field used here for hostname is really domain name, 
-# which need not be the same as the hostname.  This solution
-# is OK for now, according to the user.
 my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
@@ -43,13 +39,16 @@ while (<$infile>) {
         next;
     }
 
+    # Note: 
+    # The field used here for hostname is really domain name, 
+    # which need not be the same as the hostname.  This solution
+    # is OK for now, according to the user.
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         $stats{$1}{hostname} = $3  ;
         $stats{$1}{lun} = $2  ;
         next;
     }
 }
-
 
 
 # Process the i/p file by one paragraph at a time.
