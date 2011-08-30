@@ -24,19 +24,7 @@ my $volname;
 # Each data hash has keys for the 7 field names; and their values.
 
 
-# Read entire file & get volnames.
-while (<>) {
-    chomp;
-    if ( m/Volume name:\s+(\S+)/ ) {
-        $volname = $1;
-        $stats{$volname}{volname} = $volname  ;
-        next;
-    }
-}
-
-
-# Process the i/p file again, after volnames have been found,
-# to get other data fields.
+# Process the i/p file by one line at a time.
 #
 # Note: 
 # The field used here for hostname is really domain name, 
@@ -46,29 +34,26 @@ my $infile;
 open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
 while (<$infile>) {
     chomp;
-    if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
-        my $volname = $1;
-        my $lun  = $2;
-        my $hostname  = $3;
-        $stats{$volname}{hostname} = $hostname  ;
-        $stats{$volname}{lun} = $lun  ;
+    if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ 
+            (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
+        # volname is $1.
+        $stats{$1}{capacity} = $2  ;
+        $stats{$1}{raid} = $3  ;
+        $stats{$1}{pool} = $4  ;
         next;
     }
 
-    if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ 
-            (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
-        my $volname = $1;
-        my $capacity  = $2;
-        my $raid  = $3;
-        my $pool  = $4;
-        $stats{$volname}{capacity} = $capacity  ;
-        $stats{$volname}{raid} = $raid  ;
-        $stats{$volname}{pool} = $pool  ;
+    if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
+        $stats{$1}{hostname} = $3  ;
+        $stats{$1}{lun} = $2  ;
         next;
     }
 }
 
 
+
+# Process the i/p file by one paragraph at a time.
+#
 seek ($infile, 0, 0); # Return to start of input file.
 
 $/ = ''; # Read one paragraph at a time.
@@ -81,7 +66,8 @@ while (<$infile>) {
             Status:/msx ) {             # /s: allows dot to match newline.
         my $volname = $1;
         my $wwn  = $2;
-        $stats{$volname}{wwn} = $wwn  ;
+        $stats{$1}{volname} = $1  ;
+        $stats{$1}{wwn} = $wwn  ;
         next;
     }
 }
