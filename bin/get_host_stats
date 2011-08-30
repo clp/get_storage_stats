@@ -10,12 +10,6 @@ our $VERSION = '0.05';
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
 
-my $input_file = $ARGV[0];
-
-unless ($input_file) {
-    die "No input_file found on command line\n\n", usage();
-}
-
 my %stats;
 my $volname;
 
@@ -26,9 +20,7 @@ my $volname;
 
 # Process the i/p file by one line at a time.
 #
-my $infile;
-open $infile, '<', $input_file  or die "Cannot open $input_file: $!";
-while (<$infile>) {
+while (<>) {
     chomp;
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ 
             (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
@@ -51,13 +43,13 @@ while (<$infile>) {
 }
 
 
-# Process the i/p file by one paragraph at a time.
+# Re-open & process the i/p file by one paragraph at a time.
 #
-seek ($infile, 0, 0); # Return to start of input file.
+open my $f, '<', $ARGV or die "Cannot open $ARGV: $!";
 
 $/ = ''; # Read one paragraph at a time.
 
-while (<$infile>) {
+while (<$f>) {
     chomp;
     if ( m/\s+ Volume.name:\s+ (\S+).*  # .*  gets anything including newline,
                                         # until next anchor text (Volume.WWN).
@@ -72,7 +64,7 @@ while (<$infile>) {
 }
 
 
-# Sort on 2 keys: first hostname, then lun.
+# To print, sort on 2 keys: first hostname, then lun.
 print "Hostname, LUN, Volume Name, Capacity, RAID level, Pool, WWN\n";
     my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
     my @sorted_host_lun;
