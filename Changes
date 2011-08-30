@@ -24,3 +24,10 @@ Revision history for Parse-StorageArrayLog
         volname and hostname did not apply when the two 
         names had nothing in common, so that was abandoned.
 
+0.06    Tue2011_0830_15:55 
+        Eliminate one pass of reading the input file.
+        Eliminate some intermediate variables.
+        Simplify printing the o/p by using an array instead
+        of individual print lines for each item.
+
+

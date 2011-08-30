@@ -5,7 +5,7 @@ use warnings;
 
 # use Parse::StorageArrayLog;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my $prog = $0;
 $prog =~ s{\A.*/}{};    # strip leading path, if any
