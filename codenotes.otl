@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Mon 2011 Aug 29 11:33:51 PMPM clpoda> 
+	# Time-stamp: <Tue 2011 Aug 30 06:35:19 PMPM clpoda> 
 
 
 Observations.
@@ -180,6 +180,15 @@ Bugs
 		the o/p shows volname where it should show hostname.
 		Fixed by using volname instead of hostname to identify each data record.
 			: Wed2011_0824_22:27 
+	Fixedd.b.2. Printed o/p lines end w/ comma+space. How to cleanly prevent that unneeded trailer?
+		: Tue2011_0830_17:41 
+		Using the comma+space to separate the elts of the o/p list.
+		Don't need comma+space after the last elt.
+		Low priority bug=annoyance: this should not cause problems.
+		I could handle this w/ several lines of code.
+			Maybe write a sub to 'commify' a list - see Perl cookbook-pleac.sf.net.
+		Fixed: Only needed a 'join' clause in the print stmt.
+			: Tue2011_0830_18:34 
 
 Bug in grep3.to.get.luns script.
 	: Mon2011_0822_17:53 

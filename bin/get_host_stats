@@ -12,6 +12,7 @@ $prog =~ s{\A.*/}{};    # strip leading path, if any
 
 my %stats;
 my $volname;
+our $volname_for_wwn;
 
 # The main data structure is a hash of hash references.
 # Each key in the HoH is a volname; the value is a ref to a data hash.
@@ -31,6 +32,17 @@ while (<>) {
         next;
     }
 
+    if ( m/\s+ Volume.name:\s+ (\S+) /msx ) {
+        $stats{$1}{volname} = $1  ;
+        $volname_for_wwn = $1  ;
+        next;
+    }
+
+    if ( m/ Volume.WWN: \s+(\S+) /msx ) {
+        $stats{$volname_for_wwn}{wwn} = $1;
+        next;
+    }
+
     # Note: 
     # The field used here for hostname is really domain name, 
     # which need not be the same as the hostname.  This solution
@@ -43,41 +55,22 @@ while (<>) {
 }
 
 
-# Re-open & process the i/p file by one paragraph at a time.
-#
-open my $f, '<', $ARGV or die "Cannot open $ARGV: $!";
-
-$/ = ''; # Read one paragraph at a time.
-
-while (<$f>) {
-    chomp;
-    if ( m/\s+ Volume.name:\s+ (\S+).*  # .*  gets anything including newline,
-                                        # until next anchor text (Volume.WWN).
-            Volume.WWN: \s+(\S+) .*     # Capture value of WWN 
-            Status:/msx ) {             # /s: allows dot to match newline.
-        my $volname = $1;
-        my $wwn  = $2;
-        $stats{$1}{volname} = $1  ;
-        $stats{$1}{wwn} = $wwn  ;
-        next;
-    }
-}
-
-
 # To print, sort on 2 keys: first hostname, then lun.
+my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
+my @sorted_host_lun = sort 
+        { $stats{$a}{hostname} cmp $stats{$b}{hostname}
+                                ||
+          $stats{$a}{lun} <=> $stats{$b}{lun}
+        } @unsorted_volnames;
+
 my @columns = qw( hostname lun volname capacity raid pool wwn);
 print "Hostname, LUN, Volume Name, Capacity, RAID level, Pool, WWN\n";
-    my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
-    my @sorted_host_lun = sort 
-            { $stats{$a}{hostname} cmp $stats{$b}{hostname}
-                                    ||
-              $stats{$a}{lun} <=> $stats{$b}{lun}
-            } @unsorted_volnames;
-    foreach my $v ( @sorted_host_lun ) {
-        print ( $stats{$v}{$columns[$_]}, ", " ) for (0..$#columns);
-        print "\n";
-    }
-
+foreach my $v ( @sorted_host_lun ) {
+    my @row = ();
+    push @row , ( $stats{$v}{$columns[$_]}  ) for (0..$#columns);
+    print  ( join(", ",   @row[0 .. ($#row-1)], $row[-1]) );
+    print "\n";
+}
 
 exit;
 
