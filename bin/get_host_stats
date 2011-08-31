@@ -5,6 +5,12 @@ use warnings;
 
 # use Parse::StorageArrayLog;
 
+# Note - Tue2011_0830_19:02 :
+# This variation of get_host_stats reads the i/p file in one pass,
+# while the master branch uses two passes.
+# Keep this program in a separate git branch, one_pass_over_data_file,
+# and *DO NOT MERGE* it into the master branch without careful consideration.
+#
 our $VERSION = '0.06';
 
 my $prog = $0;
@@ -19,7 +25,7 @@ our $volname_for_wwn;
 # Each data hash has keys for the 7 field names; and their values.
 
 
-# Process the i/p file by one line at a time.
+# Process the full i/p file by one line at a time.
 #
 while (<>) {
     chomp;
@@ -48,6 +54,7 @@ while (<>) {
     # which need not be the same as the hostname.  This solution
     # is OK for now, according to the user.
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
+        # volname is $1.
         $stats{$1}{hostname} = $3  ;
         $stats{$1}{lun} = $2  ;
         next;
