@@ -13,7 +13,7 @@ $prog =~ s{\A.*/}{};    # strip leading path, if any
 my %stats;
 my $volname;
 
-# The main data structure is a hash of hashes.
+# The main data structure is a hash of hash references.
 # Each key in the HoH is a volname; the value is a ref to a data hash.
 # Each data hash has keys for the 7 field names; and their values.
 
