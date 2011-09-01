@@ -14,9 +14,9 @@ my %stats;
 my $volname;
 my @infile = @ARGV; # Save i/p file for second read loop.
 
-# The main data structure is a hash of hash references.
+# The main data structure is a hash of hash references, %stats.
 # Each key in the HoH is a volname; the value is a ref to a data hash.
-# Each data hash has keys for the 7 field names; and their values.
+# Each data hash has keys for the field names; and their values.
 
 
 # Read loop 1: Process the i/p file by one line at a time.
