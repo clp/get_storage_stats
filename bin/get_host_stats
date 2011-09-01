@@ -14,6 +14,10 @@ my %stats;
 my $volname;
 my @infile = @ARGV; # Save i/p file for second read loop.
 
+unless (-r $ARGV[0]) {
+    die "No readable input file found on command line\n\n", usage();
+}
+
 # The main data structure is a hash of hash references, %stats.
 # Each key in the HoH is a volname; the value is a ref to a data hash.
 # Each data hash has keys for the field names; and their values.
