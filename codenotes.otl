@@ -1,7 +1,26 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Mon 2011 Aug 29 11:33:51 PMPM clpoda> 
+	# Time-stamp: <Thu 2011 Sep 01 01:23:20 PMPM clpoda> 
 
+
+Plan for code using module+driver, started 2011_0901
+	: Thu2011_0901_13:17 
+	Added 9/1/11, after building several versions of the code as a stand-alone program.
+	Goal: Make a module that performs the basic functions needed.
+		Call that module from one of several drivers or tools.
+	Caller
+		Init
+		while( <> )
+			Call match_line()
+			Collect matching lines found in input file.
+		print
+			Sort the data
+			Format the data
+			Print data
+	Module
+		match_line()
+			Return '' if no match found.
+			Return hash w/ field_name=>field_value for each match found.
 
 Observations.
 	The data to extract is in two styles:
