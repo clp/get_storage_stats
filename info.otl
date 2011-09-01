@@ -1,6 +1,6 @@
 info.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/parse2011
-	# Time-stamp: <Mon 2011 Aug 22 02:48:53 PMPM clpoda> 
+	# Time-stamp: <Thu 2011 Sep 01 12:43:39 PMPM clpoda> 
 	Extract data from a storage array log file
 
 Intro
@@ -25,3 +25,26 @@ Plan
 Problem
 	Extract data from a storage array log file.
 	Make a CSV file that Excel can import.
+Branches_inside_git
+	find_hostnames                 72d6e83 Match volname to core hostname pattern to link them.
+		Use regex pattern to link hostname and volname.
+		Not a reliable technique, and it was abandoned.
+			Some volnames are not derived from the core hostname.
+		Keep this branch avbl, if its approach & code can be useful later.
+	master                         299707d Cleanup.
+		The main branch of the repository.
+	module_v1                      299707d Cleanup.
+		First try to put code into a module, w/ a separate driver to use it.
+		The code was initially built in a single script.
+	one_pass_over_data_file        444a9f6 Add note: DO NOT MERGE into master branch.
+		The initial code reads the i/p file twice.
+			First it reads each line separately, & gets the data it can.
+			Second it reads each paragraph (a block separated by blank lines), & gets other data.
+		Code in this branch gets all data from reading the file once, one line at a time.
+		Do not merge this branch into master.
+		Maybe maintain it as improvements are made, & bugs fixed, in master.
+	work                           c522693 Add new file:   refout/4-volumes.out
+		Working branch; good code gets merged back into master.
+	origin/master                  299707d Cleanup.
+	origin/one_pass_over_data_file 444a9f6 Add note: DO NOT MERGE into master branch.
+	origin/work                    c522693 Add new file:   refout/4-volumes.out
