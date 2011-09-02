@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Thu 2011 Sep 01 01:23:20 PMPM clpoda> 
+	# Time-stamp: <Thu 2011 Sep 01 04:09:38 PMPM clpoda> 
 
 
 Plan for code using module+driver, started 2011_0901
@@ -12,6 +12,8 @@ Plan for code using module+driver, started 2011_0901
 		Init
 		while( <> )
 			Call match_line()
+				i/p args: var name, pattern match?
+				Returns: '' or a hash of 1 or more entries.
 			Collect matching lines found in input file.
 		print
 			Sort the data
