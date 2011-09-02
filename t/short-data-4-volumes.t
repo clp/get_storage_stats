@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 my $project_dir = "/home/clpoda/p/Parse-StorageArrayLog/";
-my $program_under_test = $project_dir . "bin/get_host_stats";
+my $program_under_test = "perl -I lib " . $project_dir . "bin/get_host_stats";
 my $infile = 'data/4-volumes.txt' ;
 my $test_output_filename = "4-volumes.out";
 my $outdir = "tmp/";
