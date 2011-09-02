@@ -1,7 +1,10 @@
 #! /usr/bin/env perl
-#
+
 use strict;
 use warnings;
+
+use Data::Dumper;
+$Data::Dumper::Useqq = 1; # important to be able to actually see differences in whitespace, etc
 
 use Parse::StorageArrayLog qw/match_line match_paragraph/;
 
@@ -13,7 +16,6 @@ $prog =~ s{\A.*/}{};    # strip leading path, if any
 my %stats;
 my $volname;
 my @infile = @ARGV; # Save i/p file for second read loop.
-my @data;
 my $hr;
 
 unless (-r $ARGV[0]) {
@@ -29,10 +31,12 @@ unless (-r $ARGV[0]) {
 #
 while (<>) {
     chomp;
-    $hr = match_line( $_ );
+    ($volname, $hr) = match_line( $_ );
+    next if ( ! defined $hr );
     next if ( $hr eq '' );
-    push @data, $hr;
-    #F match_line( $_ )
+    while ( my ($k, $v) = each %$hr ) {
+        $stats{ $volname } {$k} = $v;
+    }
     next;
 }
 
@@ -43,11 +47,15 @@ $/ = ''; # Read one paragraph at a time.
 
 while (<>) {
     chomp;
-    $hr = match_paragraph( $_ );
+    ($volname, $hr) = match_paragraph( $_ );
+    next if ( ! defined $hr );
     next if ( $hr eq '' );
-    push @data, $hr;
+    while ( my ($k, $v) = each %$hr ) {
+        $stats{ $volname } {$k} = $v;
+    }
     next;
 }
+
 
 
 # To print, sort on 2 keys: first hostname, then lun.
