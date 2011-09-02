@@ -16,14 +16,14 @@ our @EXPORT_OK = qw/match_line match_paragraph /;
 sub match_line {
     my $line = shift;
     my %stats;
-    return() unless $line;
+    return('') unless $line;
     if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ 
             (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
         # volname is $1.
-        $stats{$1}{capacity} = $2  ;
-        $stats{$1}{raid} = $3  ;
-        $stats{$1}{pool} = $4  ;
-        return \%stats;
+        $stats{capacity} = $2  ;
+        $stats{raid} = $3  ;
+        $stats{pool} = $4  ;
+        return ($1, \%stats);
     }
 
     # Note: 
@@ -32,9 +32,9 @@ sub match_line {
     # is OK for now, according to the user.
     if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
         # volname is $1.
-        $stats{$1}{hostname} = $3  ;
-        $stats{$1}{lun} = $2  ;
-        return \%stats;
+        $stats{hostname} = $3  ;
+        $stats{lun} = $2  ;
+        return ($1, \%stats);
     }
     return('');
 } # End sub match_line.
@@ -50,16 +50,13 @@ sub match_paragraph {
             Volume.WWN: \s+(\S+) .*     # Capture value of WWN 
             Status:/msx ) {             # /s: allows dot to match newline.
         # volname is $1.
-        $stats{$1}{volname} = $1  ;
-        $stats{$1}{wwn} = $2  ;
-        return \%stats;
+        $stats{volname} = $1  ;
+        $stats{wwn} = $2  ;
+        return ($1, \%stats);
         next;
     }
     return('');
 } # End sub match_paragraph.
-
-
-
 
 
 
@@ -97,19 +94,44 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 FUNCTIONS
 
-=head2 function1
+=head2 match_line
+
+A line from the input file
+is provided by the calling software.
+
+Examine the line for a match with the patterns provided here,
+which search for 
+volume name, capacity, RAID level, RAID pool, hostname, and LUN.
+
+If a match is found, return volume name, and a reference to a hash
+with these keys:
+  volname
+  capacity
+  raid
+  pool
+  hostname
+  lun
 
 =cut
 
-sub function1 {
-}
 
-=head2 function2
+=head2 match_paragraph
+
+A paragraph, or block, of lines from the input file,
+is provided by the calling software.
+
+Examine the block for a match with the pattern provided here,
+which searches for volume name and volume WWN.
+
+If found, return volume name, and a reference to a hash
+with these keys,
+that holds volume name and WWN:
+  volname
+  wwn
 
 =cut
 
-sub function2 {
-}
+
 
 =head1 AUTHOR
 
