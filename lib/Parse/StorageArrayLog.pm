@@ -3,6 +3,69 @@ package Parse::StorageArrayLog;
 use warnings;
 use strict;
 
+use Exporter ();
+
+our @ISA       = qw/Exporter/;
+our @EXPORT_OK = qw/match_line match_paragraph /;
+
+# given a line from the i/p file,
+#  return a hash ref containing one or more records from the line where:
+#   the key and value are the name & value of a desired field.
+# if a desired field is not found '' is returned in its place.
+
+sub match_line {
+    my $line = shift;
+    my %stats;
+    return() unless $line;
+    if ( m/(\S+)\s+\w+\s+([\d,.]+ \s \w+)\s+ 
+            (RAID \s \d+) \s+\w+\s+(\S+)\s*/smx ) {
+        # volname is $1.
+        $stats{$1}{capacity} = $2  ;
+        $stats{$1}{raid} = $3  ;
+        $stats{$1}{pool} = $4  ;
+        return \%stats;
+    }
+
+    # Note: 
+    # The field used here for hostname is really domain name, 
+    # which need not be the same as the hostname.  This solution
+    # is OK for now, according to the user.
+    if ( m/^(\S+)\s+(\d+)\s+Tray\S+\s+(\S+)\s+\S+\s+$/ ) {
+        # volname is $1.
+        $stats{$1}{hostname} = $3  ;
+        $stats{$1}{lun} = $2  ;
+        return \%stats;
+    }
+    return('');
+} # End sub match_line.
+
+
+sub match_paragraph {
+    my $block = shift;
+    my %stats;
+    return('') unless $block;
+
+    if ( m/\s+ Volume.name:\s+ (\S+).*  # .*  gets anything including newline,
+                                        # until next anchor text (Volume.WWN).
+            Volume.WWN: \s+(\S+) .*     # Capture value of WWN 
+            Status:/msx ) {             # /s: allows dot to match newline.
+        # volname is $1.
+        $stats{$1}{volname} = $1  ;
+        $stats{$1}{wwn} = $2  ;
+        return \%stats;
+        next;
+    }
+    return('');
+} # End sub match_paragraph.
+
+
+
+
+
+
+
+
+
 =head1 NAME
 
 Parse::StorageArrayLog - The great new Parse::StorageArrayLog!
