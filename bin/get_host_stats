@@ -16,7 +16,7 @@ $prog =~ s{\A.*/}{};    # strip leading path, if any
 my %stats;
 my $volname;
 my @infile = @ARGV; # Save i/p file for second read loop.
-my $hr;
+my $data_hash_ref;
 
 unless (-r $ARGV[0]) {
     die "No readable input file found on command line\n\n", usage();
@@ -31,10 +31,10 @@ unless (-r $ARGV[0]) {
 #
 while (<>) {
     chomp;
-    ($volname, $hr) = match_line( $_ );
-    next if ( ! defined $hr );
-    next if ( $hr eq '' );
-    while ( my ($k, $v) = each %$hr ) {
+    ($volname, $data_hash_ref) = match_line( $_ );
+    next if ( ! defined $data_hash_ref );
+    next if ( $data_hash_ref eq '' );
+    while ( my ($k, $v) = each %$data_hash_ref ) {
         $stats{ $volname } {$k} = $v;
     }
     next;
@@ -47,10 +47,10 @@ $/ = ''; # Read one paragraph at a time.
 
 while (<>) {
     chomp;
-    ($volname, $hr) = match_paragraph( $_ );
-    next if ( ! defined $hr );
-    next if ( $hr eq '' );
-    while ( my ($k, $v) = each %$hr ) {
+    ($volname, $data_hash_ref) = match_paragraph( $_ );
+    next if ( ! defined $data_hash_ref );
+    next if ( $data_hash_ref eq '' );
+    while ( my ($k, $v) = each %$data_hash_ref ) {
         $stats{ $volname } {$k} = $v;
     }
     next;
