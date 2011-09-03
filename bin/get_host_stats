@@ -42,18 +42,19 @@ while (<>) {
 
 
 # Read loop 2: Process the i/p file by one paragraph at a time.
-$/ = ''; # Read one paragraph at a time.
-@ARGV = @infile;
-
-while (<>) {
-    chomp;
-    ($volname, $data_hash_ref) = match_paragraph( $_ );
-    next if ( ! defined $data_hash_ref );
-    next if ( $data_hash_ref eq '' );
-    while ( my ($k, $v) = each %$data_hash_ref ) {
-        $stats{ $volname } {$k} = $v;
+{
+    local $/ = ''; # Set input record separator to read by paragraphs.
+    @ARGV = @infile;
+    while (<>) {
+        chomp;
+        ($volname, $data_hash_ref) = match_paragraph( $_ );
+        next if ( ! defined $data_hash_ref );
+        next if ( $data_hash_ref eq '' );
+        while ( my ($k, $v) = each %$data_hash_ref ) {
+            $stats{ $volname } {$k} = $v;
+        }
+        next;
     }
-    next;
 }
 
 
