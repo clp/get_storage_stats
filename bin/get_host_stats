@@ -24,7 +24,7 @@ unless (-r $ARGV[0]) {
 
 # The main data structure is a hash of hash references, %stats.
 # Each key in the HoH is a volname; the value is a ref to a data hash.
-# Each data hash has keys for the field names; and their values.
+# Each data hash has keys for the field names, and their values.
 
 
 # Read loop 1: Process the i/p file by one line at a time.
@@ -76,7 +76,7 @@ foreach my $v ( @unsorted_volnames ) {
 my @sorted_host_lun = sort 
         { $stats{$a}{hostname} cmp $stats{$b}{hostname}
                                 ||
-          $stats{$a}{lun} <=> $stats{$b}{lun}
+          $stats{$a}{lun}      <=> $stats{$b}{lun}
         } @unsorted_volnames;
 
 # Print the o/p data fields in this order:
