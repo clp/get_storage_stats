@@ -1,5 +1,19 @@
 package Parse::StorageArrayLog;
 
+
+=head1 NAME
+
+Parse::StorageArrayLog - Get data from a storage array
+status file using regex patterns
+
+=head1 VERSION
+
+Version 0.02
+
+=cut
+
+our $VERSION = '0.02';
+
 use warnings;
 use strict;
 
@@ -60,20 +74,6 @@ sub match_paragraph {
 
 
 
-
-
-=head1 NAME
-
-Parse::StorageArrayLog - Get data from a storage array
-status file using regex patterns
-
-=head1 VERSION
-
-Version 0.02
-
-=cut
-
-our $VERSION = '0.02';
 
 
 =head1 SYNOPSIS
