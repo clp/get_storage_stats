@@ -57,16 +57,31 @@ while (<>) {
 }
 
 
-
-# To print, sort on 2 keys: first hostname, then lun.
+# To make sorted list, build array of volnames.
 my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
+
+# Add default values for any missing hostname or lun in collected records.
+#  This eliminates warning msgs when no data is found for sorting routine,
+#  and will insert a placeholder to show what data was not found.
+foreach my $v ( @unsorted_volnames ) {
+    if ( ! defined $stats{$v}->{hostname}  ) {
+        $stats{$v}->{hostname}  = "no_hostname";
+    }
+    if ( ! defined $stats{$v}->{lun}  ) {
+        $stats{$v}->{lun}       = "no_lun";
+    }
+}
+
+# Sort on two keys: hostname, then lun.
 my @sorted_host_lun = sort 
         { $stats{$a}{hostname} cmp $stats{$b}{hostname}
                                 ||
           $stats{$a}{lun} <=> $stats{$b}{lun}
         } @unsorted_volnames;
 
+# Print the o/p data fields in this order:
 my @columns = qw( hostname lun volname capacity raid pool wwn);
+
 print "Hostname, LUN, Volume Name, Capacity, RAID level, Pool, WWN\n";
 foreach my $v ( @sorted_host_lun ) {
     my @row = ();
