@@ -1,0 +1,9 @@
+rxsg102-zoneroots-19     	Optimal	42 GB      	RAID 5    	24   	FCRaid5              	
+
+rxsg102-zoneroots-19       10   Tray.85.Controller.A  cal-rxsg102             Optimal       
+   Host: cal-rxsg102
+
+   Volume name: rxsg102-zoneroots-19
+      Volume handle: 49
+      Volume WWN: BOGUSB8000476446000015B24C8BOGUS
+      Status: Optimal
