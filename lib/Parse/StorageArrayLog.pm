@@ -64,25 +64,24 @@ sub match_paragraph {
 
 =head1 NAME
 
-Parse::StorageArrayLog - The great new Parse::StorageArrayLog!
+Parse::StorageArrayLog - Get data from a storage array
+status file using regex patterns
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-The input file contains configuration and status data 
-about one or more storage arrays.
-
-Search the input stream (a line or a block of one or more lines)
+Search the input stream 
+(a line or a block
+with configuration or status data
+about one or more storage arrays)
 for patterns that match the regular expessions in the module.
 
 If a match is found,
