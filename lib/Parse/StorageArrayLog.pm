@@ -9,9 +9,9 @@ our @ISA       = qw/Exporter/;
 our @EXPORT_OK = qw/match_line match_paragraph /;
 
 # given a line from the i/p file,
-#  return a hash ref containing one or more records from the line where:
+#  return a hash ref containing one or more elements from the line where:
 #   the key and value are the name & value of a desired field.
-# if a desired field is not found '' is returned in its place.
+# if a desired field is not found, '' is returned in its place.
 
 sub match_line {
     my $line = shift;
@@ -49,7 +49,6 @@ sub match_paragraph {
                                         # until next anchor text (Volume.WWN).
             Volume.WWN: \s+(\S+) .*     # Capture value of WWN 
             Status:/msx ) {             # /s: allows dot to match newline.
-        # volname is $1.
         $stats{volname} = $1  ;
         $stats{wwn} = $2  ;
         return ($1, \%stats);
@@ -80,23 +79,36 @@ our $VERSION = '0.01';
 
 Quick summary of what the module does.
 
-Perhaps a little code snippet.
+The input file contains configuration and status data 
+about one or more storage arrays.
+
+Search the input stream (a line or a block of one or more lines)
+for patterns that match the regular expessions in the module.
+
+If a match is found,
+return the volume name and a reference to a hash holding the
+specific keys and values that were found in this sample.
+
 
     use Parse::StorageArrayLog;
 
-    my $foo = Parse::StorageArrayLog->new();
-    ...
+    my ($volname, $hashref) = match_line( $_ );
+    while ( my ($k, $v) = each %$hashref ) {
+        $stats{ $volname } {$k} = $v;
+    }
+
+    my ($volname, $hashref) = match_paragraph( $_ );
 
 =head1 EXPORT
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+  match_line()
+  match_paragraph()
 
 =head1 FUNCTIONS
 
 =head2 match_line
 
-A line from the input file
+Input: A line from the input file
 is provided by the calling software.
 
 Examine the line for a match with the patterns provided here,
@@ -117,15 +129,14 @@ with these keys:
 
 =head2 match_paragraph
 
-A paragraph, or block, of lines from the input file,
+Input: A paragraph, or block, of lines from the input file,
 is provided by the calling software.
 
 Examine the block for a match with the pattern provided here,
 which searches for volume name and volume WWN.
 
 If found, return volume name, and a reference to a hash
-with these keys,
-that holds volume name and WWN:
+with these keys:
   volname
   wwn
 
