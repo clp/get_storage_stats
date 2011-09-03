@@ -41,7 +41,7 @@ while (<>) {
 }
 
 
-# Read loop 2: Re-open & process the i/p file by one paragraph at a time.
+# Read loop 2: Process the i/p file by one paragraph at a time.
 $/ = ''; # Read one paragraph at a time.
 @ARGV = @infile;
 
@@ -57,18 +57,20 @@ while (<>) {
 }
 
 
-# To make sorted list, build array of volnames.
+# To make a sorted list, build array of volnames.
 my @unsorted_volnames = map { $stats{$_}->{volname} } keys %stats;
 
-# Add default values for any missing hostname or lun in collected records.
-#  This eliminates warning msgs when no data is found for sorting routine,
-#  and will insert a placeholder to show what data was not found.
+# Add default values for any missing hostname or lun in the
+# data hashes.
+# This eliminates warning msgs when no data is found 
+# by the sorting routine, and will insert a placeholder 
+# to show what data was not found in the input file.
 foreach my $v ( @unsorted_volnames ) {
-    if ( ! defined $stats{$v}->{hostname}  ) {
-        $stats{$v}->{hostname}  = "no_hostname";
+    if ( ! defined $stats{$v}{hostname} ) {
+        $stats{$v}{hostname}  = "no_hostname";
     }
-    if ( ! defined $stats{$v}->{lun}  ) {
-        $stats{$v}->{lun}       = "no_lun";
+    if ( ! defined $stats{$v}->{lun} ) {
+        $stats{$v}{lun}       = "no_lun";
     }
 }
 
