@@ -1,6 +1,6 @@
 codenotes.otl  clpoda  2011_0822
 	PC-batbug:/home/clpoda/p/Parse-StorageArrayLog
-	# Time-stamp: <Sat 2011 Sep 03 11:47:03 PMPM clpoda> 
+	# Time-stamp: <Sun 2011 Sep 04 04:20:47 PMPM clpoda> 
 
 
 Observations.
@@ -78,7 +78,7 @@ ToDo
 		: Sat2011_0827_10:14 
 	Done.t.2. Update template t/ tests w/ real data abt the project.
 		: Sat2011_0827_10:14 
-	t.3. Update any other template files real data abt the project.
+	t.3. Update any other template files with real data abt the project.
 		: Sat2011_0827_10:15 
 		Template Files were made by Module::Install.
 	t.4. Divide code into driver and module.
