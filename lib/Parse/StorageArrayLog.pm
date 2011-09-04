@@ -22,10 +22,11 @@ use Exporter ();
 our @ISA       = qw/Exporter/;
 our @EXPORT_OK = qw/match_line match_paragraph /;
 
-# given a line from the i/p file,
-#  return a hash ref containing one or more elements from the line where:
-#   the key and value are the name & value of a desired field.
-# if a desired field is not found, '' is returned in its place.
+# Given a line from the i/p file that matches a pattern in this module,
+#  return the volume name and a hash ref containing one or more 
+#  elements from the line where the key and value are the name 
+#  & value of a desired field.
+# If a line does not match any pattern here, return ''.
 
 sub match_line {
     my $line = shift;
@@ -59,10 +60,13 @@ sub match_paragraph {
     my %stats;
     return('') unless $block;
 
-    if ( m/\s+ Volume.name:\s+ (\S+).*  # .*  gets anything including newline,
-                                        # until next anchor text (Volume.WWN).
+    if ( m/\s+ Volume.name:\s+ (\S+).*  # .*  gets anything 
+                                        # including newline,
+                                        # until next anchor
+                                        # text (Volume.WWN).
             Volume.WWN: \s+(\S+) .*     # Capture value of WWN 
-            Status:/msx ) {             # /s: allows dot to match newline.
+            Status:/msx ) {             # /s: allows dot to match 
+                                        # newline.
         $stats{volname} = $1  ;
         $stats{wwn} = $2  ;
         return ($1, \%stats);
