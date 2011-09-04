@@ -22,11 +22,33 @@ use Exporter ();
 our @ISA       = qw/Exporter/;
 our @EXPORT_OK = qw/match_line match_paragraph /;
 
-# Given a line from the i/p file that matches a pattern in this module,
-#  return the volume name and a hash ref containing one or more 
-#  elements from the line where the key and value are the name 
-#  & value of a desired field.
-# If a line does not match any pattern here, return ''.
+
+=head1 SYNOPSIS
+
+    use Parse::StorageArrayLog qw(match_line match_paragraph);
+
+    ($volname, $hashref) = match_line( $line );
+    while ( my ($k, $v) = each %$hashref ) {
+        $stats{ $volname } {$k} = $v;
+    }
+
+    ($volname, $hashref) = match_paragraph( $paragraph );
+
+=head1 DESCRIPTION
+
+Search the input 
+(a line or a paragraph with data about a storage array)
+for patterns that match the regular expessions in the module.
+
+If a match is found,
+return the volume name and a reference to a hash holding the
+specific keys and values that were found in this sample.
+
+If no match is found, return ''.
+
+=cut
+
+
 
 sub match_line {
     my $line = shift;
@@ -79,28 +101,6 @@ sub match_paragraph {
 
 
 
-
-=head1 SYNOPSIS
-
-Search the input stream 
-(a line or a block
-with configuration or status data
-about one or more storage arrays)
-for patterns that match the regular expessions in the module.
-
-If a match is found,
-return the volume name and a reference to a hash holding the
-specific keys and values that were found in this sample.
-
-
-    use Parse::StorageArrayLog;
-
-    my ($volname, $hashref) = match_line( $_ );
-    while ( my ($k, $v) = each %$hashref ) {
-        $stats{ $volname } {$k} = $v;
-    }
-
-    my ($volname, $hashref) = match_paragraph( $_ );
 
 =head1 EXPORT
 
