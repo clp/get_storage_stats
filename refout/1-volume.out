@@ -1,0 +1,2 @@
+Hostname, LUN, Volume Name, Capacity, RAID level, Pool, WWN
+cal-rxsg102, 10, rxsg102-zoneroots-19, 42 GB, RAID 5, FCRaid5, BOGUSB8000476446000015B24C8BOGUS

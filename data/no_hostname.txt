@@ -1,0 +1,6 @@
+ora1-nuvx-data          	Optimal	557.793 GB  	RAID 1    	4    	RAID10-variable-disks	
+
+   Volume name: ora1-nuvx-data
+      Volume handle: 3
+      Volume WWN: BOGUSB80004764A0000018234E1BOGUS
+      Status:
